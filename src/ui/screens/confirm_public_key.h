@@ -4,8 +4,6 @@
 #include "ux.h"
 #include "glyphs.h"
 
-#include "ui/screens/confirm_public_key.h"
-
 #include "constants.h"
 #include "globals.h"
 #include "io.h"

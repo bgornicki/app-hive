@@ -135,3 +135,8 @@ typedef enum {
     OPERATION_COUNT_PARSING_ERROR = -3,
     WRONG_LENGTH_ERROR = -4
 } parser_status_e;
+
+typedef struct {
+    uint8_t initialized;
+    uint8_t sign_hash;
+} settings_t;

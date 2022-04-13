@@ -33,7 +33,7 @@ void ui_action_validate_pubkey(bool choice) {
         io_send_sw(SW_DENY);
     }
 
-    ui_menu_main();
+    ui_menu_main(NULL);
 }
 
 void ui_action_validate_transaction(bool choice) {
@@ -55,5 +55,5 @@ void ui_action_validate_transaction(bool choice) {
     }
 
     G_context.state = STATE_NONE;
-    ui_menu_main();
+    ui_menu_main(NULL);
 }
