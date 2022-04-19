@@ -23,9 +23,9 @@
 #include "menu.h"
 #include "settings.h"
 
-static char sign_hash_option_status[9];
+static char sign_hash_policy_prompt[9];
 
-UX_STEP_CB(ux_settings_hash_sign_step, bn_paging, switch_settings_hash_signing(), {.title = "Hash signing", .text = sign_hash_option_status});
+UX_STEP_CB(ux_settings_hash_sign_step, bn_paging, switch_settings_hash_signing(), {.title = "Hash signing", .text = sign_hash_policy_prompt});
 UX_STEP_VALID(ux_settings_back_step, pb, ui_menu_main(NULL), {&C_icon_back, "Back"});  // TODO make it back to ux_menu_settings_step
 
 // FLOW for the settings submenu:
@@ -34,13 +34,13 @@ UX_STEP_VALID(ux_settings_back_step, pb, ui_menu_main(NULL), {&C_icon_back, "Bac
 UX_FLOW(ux_settings_flow, &ux_settings_hash_sign_step, &ux_settings_back_step, FLOW_LOOP);
 
 void ui_display_settings(const ux_flow_step_t* const start_step) {
-    strcpy(sign_hash_option_status, N_settings.sign_hash ? "Enabled" : "Disabled");
+    strcpy(sign_hash_policy_prompt, N_settings.sign_hash_policy == ENABLED ? "Enabled" : "Disabled");
     ux_flow_init(0, ux_settings_flow, start_step);
 }
 
 void switch_settings_hash_signing(void) {
-    uint8_t value = N_settings.sign_hash ? 0 : 1;
-    nvm_write((void*) &N_settings.sign_hash, (void*) &value, sizeof(MEMBER_SIZE(settings_t, sign_hash)));
+    uint8_t value = N_settings.sign_hash_policy == ENABLED ? DISABLED : ENABLED;
+    nvm_write((void*) &N_settings.sign_hash_policy, (void*) &value, sizeof(MEMBER_SIZE(settings_t, sign_hash_policy)));
     ui_display_settings(&ux_settings_hash_sign_step);
 }
 

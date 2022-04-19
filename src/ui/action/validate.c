@@ -57,3 +57,20 @@ void ui_action_validate_transaction(bool choice) {
     G_context.state = STATE_NONE;
     ui_menu_main(NULL);
 }
+
+void ui_action_validate_hash(bool choice) {
+    if (choice) {
+        G_context.state = STATE_APPROVED;
+
+        ui_display_signing_message();
+
+        // refresh the display before intensive operation
+        io_seproxyhal_io_heartbeat();
+
+        if (!crypto_sign_hash()) {
+            io_send_sw(SW_SIGNATURE_FAIL);
+        } else {
+            helper_send_response_sig();
+        }
+    }
+}

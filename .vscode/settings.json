@@ -84,7 +84,8 @@
         "numeric": "c",
         "__functional_base_03": "c",
         "__tuple": "c",
-        "compare": "c"
+        "compare": "c",
+        "sstream": "c"
     },
     "C_Cpp.clang_format_path": "/usr/bin/clang-format",
     "editor.formatOnSave": true

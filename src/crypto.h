@@ -54,3 +54,15 @@ int crypto_init_public_key(cx_ecfp_private_key_t *private_key, cx_ecfp_public_ke
  *
  */
 bool crypto_sign_message(void);
+
+/**
+ * Sign hash in global context.
+ *
+ * @see G_context.bip32_path, G_context.hash_info.hash,
+ * G_context.hash_info.signature.
+ *
+ * @return true if success, false otherwise.
+ *
+ * @throw INVALID_PARAMETER
+ */
+bool crypto_sign_hash(void);

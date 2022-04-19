@@ -118,7 +118,7 @@ __attribute__((section(".boot"))) int main() {
 #endif  // TARGET_NANOX
 
                 if (N_settings.initialized != 0x01) {
-                    settings_t settings = {.initialized = 0x01, .sign_hash = 0x00};
+                    settings_t settings = {.initialized = 0x01, .sign_hash_policy = DISABLED};
                     nvm_write((void *) &N_settings, (void *) &settings, sizeof(settings_t));
                 }
 

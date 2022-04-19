@@ -130,3 +130,65 @@ bool crypto_sign_message() {
 
     return is_valid;
 }
+
+bool crypto_sign_hash() {
+    cx_ecfp_private_key_t private_key = {0};
+    uint8_t chain_code[CHAINCODE_LEN] = {0};
+    uint8_t der_signature[MAX_DER_SIG_LEN] = {0};
+    uint32_t info = 0;
+    uint8_t V[DIGEST_LEN];
+    uint8_t K[DIGEST_LEN];
+    int32_t counter = 0;
+    bool is_valid = true;
+
+    // derive private key according to BIP32 path
+    crypto_derive_private_key(&private_key, chain_code, G_context.bip32_path, G_context.bip32_path_len);
+
+    BEGIN_TRY {
+        TRY {
+            /* Hive backend only accepts canonical signatures but there is no way of knowing if the signature that is going to be produced will be canonical.
+             * That's why we need to derive deterministic k parameter for ECDSA signing and while generating this parameter we will add our loop counter to the
+             * digest before hashing. This results in a new deterministic k each round which will result in either a canonical or non-canonical signature. */
+            while (true) {
+                if (counter == 0) {
+                    rng_rfc6979(der_signature, G_context.hash_info.hash, private_key.d, private_key.d_len, SECP256K1_N, ARRAYLEN(SECP256K1_N), V, K);
+                } else {
+                    rng_rfc6979(der_signature, G_context.hash_info.hash, NULL, 0, SECP256K1_N, ARRAYLEN(SECP256K1_N), V, K);
+                }
+
+                cx_ecdsa_sign(&private_key,
+                              CX_NO_CANONICAL | CX_RND_PROVIDED | CX_LAST,
+                              CX_SHA256,
+                              G_context.hash_info.hash,
+                              DIGEST_LEN,
+                              der_signature,
+                              MAX_DER_SIG_LEN,
+                              &info);
+
+                if ((info & CX_ECCINFO_PARITY_ODD) != 0) {
+                    der_signature[0] |= 0x01;
+                }
+
+                if (!signature_from_der(der_signature, G_context.hash_info.signature, MEMBER_SIZE(hash_ctx_t, signature))) {
+                    is_valid = false;
+                    break;
+                }
+
+                if (signature_check_canonical(G_context.hash_info.signature + 1)) {
+                    break;
+                } else {
+                    counter++;
+                }
+            }
+        }
+        CATCH_OTHER(e) {
+            THROW(e);
+        }
+        FINALLY {
+            explicit_bzero(&private_key, sizeof(private_key));
+        }
+    }
+    END_TRY;
+
+    return is_valid;
+}
