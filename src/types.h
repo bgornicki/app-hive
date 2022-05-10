@@ -105,22 +105,21 @@ typedef struct {
 typedef struct {
     uint8_t raw_tx[MAX_TRANSACTION_LEN];  /// raw transaction serialized
     size_t raw_tx_len;                    /// length of raw transaction
-    uint8_t m_hash[DIGEST_LEN];           /// message hash digest
-    uint8_t signature[SIGNATURE_LEN];     /// compact transaction signature supported by Hive backend
 
     const parser_t *parser;
     buffer_t operation;
 
+    uint8_t digest[DIGEST_LEN];        /// message hash digest
+    uint8_t signature[SIGNATURE_LEN];  /// compact transaction signature supported by Hive backend
     cx_sha256_t sha;
 
 } transaction_ctx_t;
 
 /**
- * Structure for hash information context (blind signing)
+ * Structure for hash signing context (blind signing)
  */
 typedef struct {
-    uint8_t hash[DIGEST_LEN];  // TODO change this
-    char hash_str[DIGEST_LEN * 2 + 1];
+    uint8_t hash[DIGEST_LEN];          // input hash
     uint8_t signature[SIGNATURE_LEN];  /// compact transaction signature supported by Hive backend
 } hash_ctx_t;
 

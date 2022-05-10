@@ -45,10 +45,13 @@ void ui_action_validate_transaction(bool choice) {
         // refresh the display before intensive operation
         io_seproxyhal_io_heartbeat();
 
-        if (!crypto_sign_message()) {
+        // store hash (take 0 bytes from current hash and copy it to the output buffer)
+        cx_hash_final((cx_hash_t *) &G_context.tx_info.sha, G_context.tx_info.digest);
+
+        if (!crypto_sign_digest(G_context.tx_info.digest, G_context.tx_info.signature)) {
             io_send_sw(SW_SIGNATURE_FAIL);
         } else {
-            helper_send_response_sig();
+            helper_send_response_sig(G_context.tx_info.signature, MEMBER_SIZE(transaction_ctx_t, signature));
         }
     } else {
         io_send_sw(SW_DENY);
@@ -67,10 +70,15 @@ void ui_action_validate_hash(bool choice) {
         // refresh the display before intensive operation
         io_seproxyhal_io_heartbeat();
 
-        if (!crypto_sign_hash()) {
+        if (!crypto_sign_digest(G_context.hash_info.hash, G_context.hash_info.signature)) {
             io_send_sw(SW_SIGNATURE_FAIL);
         } else {
-            helper_send_response_sig();
+            helper_send_response_sig(G_context.hash_info.signature, MEMBER_SIZE(hash_ctx_t, signature));
         }
+    } else {
+        io_send_sw(SW_DENY);
     }
+
+    G_context.state = STATE_NONE;
+    ui_menu_main(NULL);
 }

@@ -56,3 +56,7 @@
  * Status word for signature fail.
  */
 #define SW_WRONG_HASH_LENGTH 0xB007
+/**
+ * Status word for hash parsing fail.
+ */
+#define SW_HASH_PARSING_FAIL 0xB008

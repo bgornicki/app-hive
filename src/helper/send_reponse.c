@@ -45,6 +45,6 @@ int helper_send_response_pubkey() {
     return io_send_response(&(const buffer_t){.ptr = resp, .size = offset, .offset = 0}, SW_OK);
 }
 
-int helper_send_response_sig() {
-    return io_send_response(&(const buffer_t){.ptr = G_context.tx_info.signature, .size = MEMBER_SIZE(transaction_ctx_t, signature), .offset = 0}, SW_OK);
+int helper_send_response_sig(const uint8_t *signature, size_t sig_len) {
+    return io_send_response(&(const buffer_t){.ptr = signature, .size = sig_len, .offset = 0}, SW_OK);
 }

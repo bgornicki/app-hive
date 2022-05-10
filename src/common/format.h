@@ -80,4 +80,4 @@ bool format_u64(const uint64_t i, char *out, uint8_t out_len);
  */
 bool format_asset(asset_t *asset, char *out, size_t size);
 
-void btox(char *xp, const uint8_t *bb, int n);
+bool format_hash(const uint8_t *hash, size_t hash_len, char *out, size_t out_len);

@@ -23,7 +23,7 @@
 
 static action_validate_cb g_validate_callback;
 static char g_bip32_path[60];
-static char g_hash[64 + 1];  // TODO use defined const
+static char g_hash[DIGEST_LEN * 2 + 1];
 
 #ifdef TARGET_NANOS
 // Step with title/text for BIP32 path
@@ -92,7 +92,7 @@ UX_STEP_NOCB(ux_display_review_hash_step,
              });
 
 // FLOW to display transaction information:
-// #1 screen : eye icon + "Review Transaction"
+// #1 screen : eye icon + "Review hash"
 // #2 n screens : display transaction field
 // #3 screen : approve button
 // #4 screen : reject button
@@ -132,9 +132,9 @@ int ui_display_hash() {
         return io_send_sw(SW_WRONG_BIP32_PATH);
     }
 
-    btox(G_context.hash_info.hash_str, G_context.hash_info.hash, 64);
-    snprintf(g_hash, sizeof(g_hash), "%s", G_context.hash_info.hash_str);
-    // snprintf(g_hash, sizeof(g_hash), "%02x", G_context.hash_info.hash);
+    if (!format_hash(G_context.hash_info.hash, MEMBER_SIZE(hash_ctx_t, hash), g_hash, sizeof(g_hash))) {
+        return io_send_sw(SW_WRONG_HASH_LENGTH);
+    }
 
     g_validate_callback = &ui_action_validate_hash;
 

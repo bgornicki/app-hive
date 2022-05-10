@@ -41,8 +41,6 @@ int handler_sign_hash(buffer_t *cdata) {
     G_context.req_type = CONFIRM_HASH;
     G_context.state = STATE_NONE;
 
-    // cx_sha256_init(&G_context.tx_info.sha);
-
     // test APDU D41000000401
     // test APDU d41000003505800000308000000d8000000080000000800000005fd924625f6ab16a19cc9807c7c506ae1813490e4ba675f843d5a10e0baacdb8
 
@@ -51,14 +49,10 @@ int handler_sign_hash(buffer_t *cdata) {
         return io_send_sw(SW_HASH_SIGNING_DISABLED);
     }
 
-    // if (!buffer_move(cdata, G_context.hash_info.hash, MEMBER_SIZE(hash_ctx_t, hash))) {
-    //     return io_send_sw(SW_WRONG_HASH_LENGTH);
-    // }
-
     const parser_status_e status = hash_parse(cdata);
 
     if (status != PARSING_OK) {
-        return io_send_sw(SW_TX_PARSING_FAIL);
+        return io_send_sw(SW_HASH_PARSING_FAIL);
     }
 
     G_context.state = STATE_PARSED;
