@@ -8,7 +8,7 @@
             {
                 "creator": "engrave",
                 "new_account_name": "engrave.ledger",
-                "fee": "3.000 STEEM",
+                "fee": "3.000 HIVE",
                 "owner": {
                     "weight_threshold": 1,
                     "account_auths": [],

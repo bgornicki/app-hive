@@ -9,7 +9,7 @@ describe('Get app version', async () => {
         try {
             const hive = new Hive(transport);
             const version = await hive.getAppVersion();
-            expect(version).to.be.equal('1.0.1');
+            expect(version).to.be.equal('1.1.0');
         } finally {
             await transport.close();
         }

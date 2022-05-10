@@ -8,7 +8,7 @@
             {
                 "author": "engrave",
                 "permlink": "introduction",
-                "max_accepted_payout": "100000.000 SBD",
+                "max_accepted_payout": "100000.000 HBD",
                 "percent_hbd": 5000,
                 "allow_votes": true,
                 "allow_curation_rewards": true,

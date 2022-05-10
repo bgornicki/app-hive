@@ -8,8 +8,8 @@
             {
                 "owner": "engrave",
                 "orderid": 10,
-                "amount_to_sell": "1.123 STEEM",
-                "min_to_receive": "0.25 SBD",
+                "amount_to_sell": "1.123 HIVE",
+                "min_to_receive": "0.25 HBD",
                 "fill_or_kill": false,
                 "expiration": "2035-10-29T06:32:22"
             }
