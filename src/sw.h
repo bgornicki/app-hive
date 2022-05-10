@@ -48,3 +48,11 @@
  * Status word for signature fail.
  */
 #define SW_SIGNATURE_FAIL 0xB005
+/**
+ * Status word for signature fail.
+ */
+#define SW_HASH_SIGNING_DISABLED 0xB006
+/**
+ * Status word for signature fail.
+ */
+#define SW_WRONG_HASH_LENGTH 0xB007

@@ -15,3 +15,5 @@
  *
  */
 parser_status_e transaction_parse(buffer_t *buf);
+
+parser_status_e hash_parse(buffer_t *buf);

@@ -138,10 +138,10 @@ UX_STEP_NOCB(ux_display_signing_step,
 
 // FLOW to display transaction signing message:
 // #1 screen : eye processing + "Signing Transaction"
-UX_FLOW(ux_display_signing_flow, &ux_display_signing_step);
+UX_FLOW(ux_display_signing_tx_flow, &ux_display_signing_step);
 
 void ui_display_signing_message() {
-    ux_flow_init(0, ux_display_signing_flow, NULL);
+    ux_flow_init(0, ux_display_signing_tx_flow, NULL);
 }
 
 int ui_display_transaction() {

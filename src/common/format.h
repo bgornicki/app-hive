@@ -79,3 +79,5 @@ bool format_u64(const uint64_t i, char *out, uint8_t out_len);
  * @return true if success, false otherwise.
  */
 bool format_asset(asset_t *asset, char *out, size_t size);
+
+void btox(char *xp, const uint8_t *bb, int n);

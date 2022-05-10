@@ -119,7 +119,7 @@ typedef struct {
  * Structure for hash information context (blind signing)
  */
 typedef struct {
-    uint8_t hash[DIGEST_LEN];
+    uint8_t hash[DIGEST_LEN];  // TODO change this
     char hash_str[DIGEST_LEN * 2 + 1];
     uint8_t signature[SIGNATURE_LEN];  /// compact transaction signature supported by Hive backend
 } hash_ctx_t;
@@ -132,7 +132,7 @@ typedef struct {
     union {
         pubkey_ctx_t pk_info;       /// public key context
         transaction_ctx_t tx_info;  /// transaction context
-        hash_ctx_t hash_info;       /// blind signing context
+        hash_ctx_t hash_info;       /// hash signing context
     };
     request_type_e req_type;              /// user request
     uint32_t bip32_path[MAX_BIP32_PATH];  /// BIP32 path

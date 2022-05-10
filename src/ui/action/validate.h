@@ -2,6 +2,7 @@
 
 #include <stdbool.h>  // bool
 #include "ui/screens/review_transaction.h"
+#include "ui/screens/review_hash.h"
 
 /**
  * Action for public key validation and export.

@@ -27,84 +27,41 @@
 #include "sw.h"
 #include "globals.h"
 #include "crypto.h"
-#include "ui/screens/review_transaction.h"
+#include "ui/screens/review_hash.h"
+#include "ui/screens/settings.h"
 #include "common/buffer.h"
 #include "apdu/dispatcher.h"
 
 int handler_sign_hash(buffer_t *cdata) {
+    if (G_context.state != STATE_NONE) {
+        return io_send_sw(SW_BAD_STATE);
+    }
+
     explicit_bzero(&G_context, sizeof(G_context));
     G_context.req_type = CONFIRM_HASH;
     G_context.state = STATE_NONE;
 
-    cx_sha256_init(&G_context.tx_info.sha);
+    // cx_sha256_init(&G_context.tx_info.sha);
 
-    // TODO parse hash, check length etc
+    // test APDU D41000000401
+    // test APDU d41000003505800000308000000d8000000080000000800000005fd924625f6ab16a19cc9807c7c506ae1813490e4ba675f843d5a10e0baacdb8
 
-    G_context.state = STATE_PARSED;
-    ////
-
-    if (chunk == P1_FIRST_CHUNK) {  // first chunk
-
-        if (!buffer_move(cdata, G_context.tx_info.raw_tx, MAX_TRANSACTION_LEN)) {
-            return io_send_sw(SW_WRONG_TX_LENGTH);
-        }
-
-        G_context.tx_info.raw_tx_len += cdata->size;
-
-        if (!more) {
-            buffer_t tx = {0};
-
-            tx.offset = 0;
-            tx.ptr = G_context.tx_info.raw_tx;
-            tx.size = cdata->size;
-            const parser_status_e status = transaction_parse(&tx);
-
-            if (status != PARSING_OK) {
-                return io_send_sw(SW_TX_PARSING_FAIL);
-            }
-
-            G_context.state = STATE_PARSED;
-
-            return ui_display_transaction();
-        } else {
-            G_context.state = STATE_TX_RECEIVING;
-            // will be more, just return OK
-            return io_send_sw(SW_OK);
-        }
-
-    } else {
-        if (G_context.state != STATE_TX_RECEIVING) {
-            return io_send_sw(SW_BAD_STATE);
-        }
-
-        // get subsequent chunk
-        if (!buffer_move(cdata, G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_len, MAX_TRANSACTION_LEN - G_context.tx_info.raw_tx_len)) {
-            return io_send_sw(SW_WRONG_TX_LENGTH);
-        }
-
-        G_context.tx_info.raw_tx_len += cdata->size;
-
-        if (!more) {
-            buffer_t tx = {0};
-            tx.offset = 0;
-            tx.ptr = G_context.tx_info.raw_tx;
-            tx.size = G_context.tx_info.raw_tx_len;
-
-            const parser_status_e status = transaction_parse(&tx);
-
-            if (status != PARSING_OK) {
-                return io_send_sw(SW_TX_PARSING_FAIL);
-            }
-
-            G_context.state = STATE_PARSED;
-
-            return ui_display_transaction();
-        } else {
-            G_context.state = STATE_TX_RECEIVING;
-            // will be more, just return OK
-            return io_send_sw(SW_OK);
-        }
+    if (N_settings.sign_hash_policy == DISABLED) {
+        ui_display_hash_signing_disabled_warning();
+        return io_send_sw(SW_HASH_SIGNING_DISABLED);
     }
 
-    return 0;
+    // if (!buffer_move(cdata, G_context.hash_info.hash, MEMBER_SIZE(hash_ctx_t, hash))) {
+    //     return io_send_sw(SW_WRONG_HASH_LENGTH);
+    // }
+
+    const parser_status_e status = hash_parse(cdata);
+
+    if (status != PARSING_OK) {
+        return io_send_sw(SW_TX_PARSING_FAIL);
+    }
+
+    G_context.state = STATE_PARSED;
+
+    return ui_display_hash();
 }

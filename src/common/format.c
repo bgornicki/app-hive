@@ -143,7 +143,7 @@ bool format_u64(const uint64_t i, char *out, uint8_t out_len) {
 }
 
 static bool insert_string(char *out, uint8_t out_len, const char *source, size_t position) {
-    if (strlen(source) + position > out_len - 1) {  // need space for null character
+    if (strlen(source) + position > out_len - 1) {  // format_timestamp need space for null character
         return false;
     }
 
@@ -197,4 +197,9 @@ bool format_asset(asset_t *asset, char *out, size_t out_len) {
     }
 
     return true;
+}
+
+void btox(char *xp, const uint8_t *bb, int n) {
+    const char xx[] = "0123456789ABCDEF";
+    while (--n >= 0) xp[n] = xx[(bb[n >> 1] >> ((1 - (n & 1)) << 2)) & 0xF];
 }

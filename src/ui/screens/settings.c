@@ -70,3 +70,7 @@ UX_STEP_CB(
 // clang-format on
 
 UX_FLOW(ux_warning_hash_signing_disabled_flow, &ux_warning_hash_signing_step);
+
+void ui_display_hash_signing_disabled_warning(void) {
+    ux_flow_init(0, ux_warning_hash_signing_disabled_flow, NULL);
+}
