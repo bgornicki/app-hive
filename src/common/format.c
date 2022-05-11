@@ -200,7 +200,7 @@ bool format_asset(asset_t *asset, char *out, size_t out_len) {
 }
 
 bool format_hash(const uint8_t *hash, size_t hash_len, char *out, size_t out_len) {
-    if (out_len < hash_len * 2 + 1) {  // hex representation with termination character
+    if (out_len < (hash_len * 2) + 1) {  // hex representation with termination character
         return false;
     }
 

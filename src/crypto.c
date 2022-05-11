@@ -2,7 +2,7 @@
  *   Ledger App Hive.
  *   (c) 2020 Ledger SAS.
  *   Modification based on (c) 2020 Andrew Chaney
- *   Modifications (c) 2021 Bartłomiej (@engrave) Górnicki
+ *   Modifications (c) 2021, 2022 Bartłomiej (@engrave) Górnicki
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -33,7 +33,10 @@
 uint8_t const SECP256K1_N[32] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xfe,
                                  0xba, 0xae, 0xdc, 0xe6, 0xaf, 0x48, 0xa0, 0x3b, 0xbf, 0xd2, 0x5e, 0x8c, 0xd0, 0x36, 0x41, 0x41};
 
-int crypto_derive_private_key(cx_ecfp_private_key_t *private_key, uint8_t chain_code[static 32], const uint32_t *bip32_path, uint8_t bip32_path_len) {
+int crypto_derive_private_key(cx_ecfp_private_key_t *private_key,
+                              uint8_t chain_code[static CHAINCODE_LEN],
+                              const uint32_t *bip32_path,
+                              uint8_t bip32_path_len) {
     uint8_t raw_private_key[32] = {0};
 
     BEGIN_TRY {
@@ -55,7 +58,7 @@ int crypto_derive_private_key(cx_ecfp_private_key_t *private_key, uint8_t chain_
     return 0;
 }
 
-int crypto_init_public_key(cx_ecfp_private_key_t *private_key, cx_ecfp_public_key_t *public_key, uint8_t raw_public_key[static 64]) {
+int crypto_init_public_key(cx_ecfp_private_key_t *private_key, cx_ecfp_public_key_t *public_key, uint8_t raw_public_key[static PUBKEY_UNCOMPRESSED_LEN]) {
     // generate corresponding public key
     cx_ecfp_generate_pair(CX_CURVE_256K1, public_key, private_key, 1);
 

@@ -17,7 +17,7 @@
 #include "ui/action/validate.h"
 
 /**
- * Display transaction information on the device and ask confirmation before signing
+ * Display hash string on the device and ask confirmation before signing
  *
  * @return 0 if success, negative integer otherwise.
  *
@@ -25,7 +25,7 @@
 int ui_display_hash(void);
 
 /**
- * Initialize "Signing transaction" display when TX got accepted
+ * Initialize "Signing hash" display when digest got accepted
  *
  */
 void ui_display_signing_hash_message(void);

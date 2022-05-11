@@ -41,12 +41,17 @@ int crypto_derive_private_key(cx_ecfp_private_key_t *private_key, uint8_t chain_
  * @throw INVALID_PARAMETER
  *
  */
-int crypto_init_public_key(cx_ecfp_private_key_t *private_key, cx_ecfp_public_key_t *public_key, uint8_t raw_public_key[static 64]);
+int crypto_init_public_key(cx_ecfp_private_key_t *private_key, cx_ecfp_public_key_t *public_key, uint8_t raw_public_key[static PUBKEY_UNCOMPRESSED_LEN]);
 
 /**
  * Sign message hash in global context.
  *
- * @see G_context.bip32_path, G_context.tx_info.signature.
+ * @param[in]  digest
+ *   Pointer to transaction digest.
+ * @param[out] signature
+ *  Pointer to signature.
+ *
+ * @see G_context.bip32_path
  *
  * @return true if success, false otherwise.
  *

@@ -38,7 +38,7 @@
 #define MAX_TRANSACTION_LEN (3 * MAX_DATA_CHUNK_LEN)
 
 /**
- * Maximum signature length (bytes).
+ * Maximum DER encoded signature length (bytes).
  */
 #define MAX_DER_SIG_LEN 74
 
@@ -53,6 +53,15 @@
 #define DIGEST_LEN 32
 
 /**
- * Hash digest length
+ * Chaincode length
  */
 #define CHAINCODE_LEN 32
+
+// [x-coordinate (32)][y-coordinate (32)]
+#define PUBKEY_UNCOMPRESSED_LEN 64
+
+// [prefix (1)][x-coordinate (32)]
+#define PUBKEY_COMPRESSED_LEN 33
+
+// [wif (53)][\0]
+#define PUBKEY_WIF_STR_LEN 54

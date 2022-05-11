@@ -23,7 +23,7 @@
 #include "menu.h"
 #include "settings.h"
 
-static char sign_hash_policy_prompt[9];
+static char sign_hash_policy_prompt[9];  // max size of longest settings name which is "Disabled"
 
 UX_STEP_CB(ux_settings_hash_sign_step, bn_paging, switch_settings_hash_signing(), {.title = "Hash signing", .text = sign_hash_policy_prompt});
 UX_STEP_VALID(ux_settings_back_step, pb, ui_menu_main(NULL), {&C_icon_back, "Back"});  // TODO make it back to ux_menu_settings_step
@@ -44,8 +44,6 @@ void switch_settings_hash_signing(void) {
     ui_display_settings(&ux_settings_hash_sign_step);
 }
 
-// TODO should display it when blind signing is disabled
-//////////////////////////////////////////////////////////////////////
 // clang-format off
 #if defined(TARGET_NANOS)
 UX_STEP_CB(
