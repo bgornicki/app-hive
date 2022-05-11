@@ -36,12 +36,11 @@ void bn_paging_edgecase() {
     ux_flow_relayout();
 }
 
-// For Nano X utilize all three lines of text
-#ifdef TARGET_NANOX
+#ifdef TARGET_NANOS
 
 // Step with title/text for BIP32 path
 UX_STEP_NOCB(ux_display_tx_path_step,
-             bnnn_paging,
+             bn_paging,
              {
                  .title = "Signing key path",
                  .text = g_bip32_path,
@@ -49,16 +48,19 @@ UX_STEP_NOCB(ux_display_tx_path_step,
 
 // Step with title/text for transaction field
 UX_STEP_NOCB(ux_display_tx_field_step,
-             bnnn_paging,
+             bn_paging,
              {
                  .title = g_tx_field_parsed.title,
                  .text = g_tx_field_parsed.value,
              });
+
 #else
+
+// For Nano X utilize all three lines of text
 
 // Step with title/text for BIP32 path
 UX_STEP_NOCB(ux_display_tx_path_step,
-             bn_paging,
+             bnnn_paging,
              {
                  .title = "Signing key path",
                  .text = g_bip32_path,
@@ -66,7 +68,7 @@ UX_STEP_NOCB(ux_display_tx_path_step,
 
 // Step with title/text for transaction field
 UX_STEP_NOCB(ux_display_tx_field_step,
-             bn_paging,
+             bnnn_paging,
              {
                  .title = g_tx_field_parsed.title,
                  .text = g_tx_field_parsed.value,
