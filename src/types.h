@@ -41,7 +41,8 @@ typedef enum {
     SIGN_TRANSACTION = 0x04,  /// sign transaction with BIP32 path
     GET_VERSION = 0x06,       /// version of the application
     GET_APP_NAME = 0x08,      /// name of the application
-    SIGN_HASH = 0x10,
+    SIGN_HASH = 0x10,         /// sign hash with BIP32 path
+    GET_SETTINGS = 0x12       /// settings of the application
 } command_e;
 
 /**

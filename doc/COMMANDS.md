@@ -9,6 +9,7 @@
 | `GET_VERSION`      | 0x06 | Get application version as `MAJOR`, `MINOR`, `PATCH` buffer               |
 | `GET_APP_NAME`     | 0x08 | Get ASCII encoded application name                                        |
 | `SIGN_HASH`        | 0x10 | Sign transaction digest (blind sign)                                      |
+| `GET_SETTINGS`     | 0x12 | Get application settings                                                  |
 
 ## GET_PUBLIC_KEY
 
@@ -105,6 +106,20 @@ Input data is BIP 32 path followed by transaction digest (array of bytes)
 | Response length (bytes) | SW     | RData            |
 | ----------------------- | ------ | ---------------- |
 | var                     | 0x9000 | `signature (33)` |
+
+## GET_SETTINGS
+
+### Command
+
+| CLA  | INS  | P1   | P2   | Lc   | CData |
+| ---- | ---- | ---- | ---- | ---- | ----- |
+| 0xD4 | 0x12 | 0x00 | 0x00 | 0x00 | -     |
+
+### Response
+
+| Response length (bytes) | SW     | RData                  |
+| ----------------------- | ------ | ---------------------- |
+| var                     | 0x9000 | `hash_sign_policy (1)` |
 
 ## Status Words
 
