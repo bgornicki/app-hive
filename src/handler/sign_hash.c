@@ -15,10 +15,10 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include <stdint.h>   // uint*_t
-#include <stdbool.h>  // bool
-#include <stddef.h>   // size_t
-#include <string.h>   // memset, explicit_bzero
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <string.h>
 
 #include "os.h"
 #include "cx.h"
@@ -40,9 +40,6 @@ int handler_sign_hash(buffer_t *cdata) {
     explicit_bzero(&G_context, sizeof(G_context));
     G_context.req_type = CONFIRM_HASH;
     G_context.state = STATE_NONE;
-
-    // test APDU D41000000401
-    // test APDU d41000003505800000308000000d8000000080000000800000005fd924625f6ab16a19cc9807c7c506ae1813490e4ba675f843d5a10e0baacdb8
 
     if (N_settings.sign_hash_policy == DISABLED) {
         ui_display_hash_signing_disabled_warning();

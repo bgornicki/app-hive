@@ -109,7 +109,7 @@ typedef struct {
     const parser_t *parser;
     buffer_t operation;
 
-    uint8_t digest[DIGEST_LEN];        /// message hash digest
+    uint8_t digest[DIGEST_LEN];        /// message digest
     uint8_t signature[SIGNATURE_LEN];  /// compact transaction signature supported by Hive backend
     cx_sha256_t sha;
 
@@ -120,7 +120,7 @@ typedef struct {
  */
 typedef struct {
     uint8_t hash[DIGEST_LEN];          // input hash
-    uint8_t signature[SIGNATURE_LEN];  /// compact transaction signature supported by Hive backend
+    uint8_t signature[SIGNATURE_LEN];  /// compact hash signature supported by Hive backend
 } hash_ctx_t;
 
 /**

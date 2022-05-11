@@ -49,11 +49,11 @@
  */
 #define SW_SIGNATURE_FAIL 0xB005
 /**
- * Status word for signature fail.
+ * Status word for trying to sign hash with policy disabled in settings.
  */
 #define SW_HASH_SIGNING_DISABLED 0xB006
 /**
- * Status word for signature fail.
+ * Status word invalid length of input dat.
  */
 #define SW_WRONG_HASH_LENGTH 0xB007
 /**

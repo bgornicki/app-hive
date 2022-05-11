@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdbool.h>  // bool
+#include <stdbool.h>
 
 #include "os.h"
 #include "ux.h"

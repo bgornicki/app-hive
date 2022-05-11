@@ -1,7 +1,6 @@
 /*****************************************************************************
  *   Ledger App Hive.
- *   (c) 2020 Ledger SAS.
- *   Modifications (c) 2021 Bartłomiej (@engrave) Górnicki
+ *   (c) 2022 Bartłomiej (@engrave) Górnicki
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,8 +15,8 @@
  *  limitations under the License.
  *****************************************************************************/
 
-#include <stdbool.h>  // bool
-#include <string.h>   // memset
+#include <stdbool.h>
+#include <string.h>
 
 #include "ui/screens/review_hash.h"
 
