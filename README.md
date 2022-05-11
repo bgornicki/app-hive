@@ -78,6 +78,24 @@ Compile app in the container:
 docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest make
 ```
 
+You can compile the app in debug mode (should print additional information in speculos) with:
+
+```
+docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest make DEBUG=1
+```
+
+If you want to compile the app for Nano X model, enter the container:
+
+```
+docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+```
+
+And then run
+
+```
+BOLOS_SDK=$NANOX_SDK make
+```
+
 ## Simulate with Speculos
 
 Download speculos

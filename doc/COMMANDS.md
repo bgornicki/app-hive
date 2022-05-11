@@ -8,7 +8,7 @@
 | `SIGN_TRANSACTION` | 0x04 | Sign transaction given BIP32 path (SLIP-0048) and DER encoded transaction |
 | `GET_VERSION`      | 0x06 | Get application version as `MAJOR`, `MINOR`, `PATCH` buffer               |
 | `GET_APP_NAME`     | 0x08 | Get ASCII encoded application name                                        |
-| `SIGN_HASH`        | 0x10 | Sign transaction hash (blind sign)                                        |
+| `SIGN_HASH`        | 0x10 | Sign transaction digest (blind sign)                                      |
 
 ## GET_PUBLIC_KEY
 
@@ -50,9 +50,9 @@ Currently, only single operation transactions are supported. App will refuse tra
 
 ### Command
 
-| CLA  | INS  | P1                                              | P2                                        | Lc     | CData                                                                                                                                                                                                                                |
-| ---- | ---- | ----------------------------------------------- | ----------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 0xD4 | 0x04 | 0x00 (first chunk) <br> 0x80 (subsequent chunk) | 0x00 (last chunk) <br> 0x80 (expect more) | 1 + 4n | **First chunk**:<br> `len(bip32_path) (1)` \|\|<br> `bip32_path{1} (4)` \|\|<br>`...` \|\|<br>`bip32_path{n} (4)` \|\|<br>`DER encoded transaction (var)`<br><br>**Subsequent chunk (optional)**:<br>`DER encoded transaction (var)` |
+| CLA  | INS  | P1                                              | P2                                        | Lc           | CData                                                                                                                                                                                                                                |
+| ---- | ---- | ----------------------------------------------- | ----------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0xD4 | 0x04 | 0x00 (first chunk) <br> 0x80 (subsequent chunk) | 0x00 (last chunk) <br> 0x80 (expect more) | 1 + 4n + var | **First chunk**:<br> `len(bip32_path) (1)` \|\|<br> `bip32_path{1} (4)` \|\|<br>`...` \|\|<br>`bip32_path{n} (4)` \|\|<br>`DER encoded transaction (var)`<br><br>**Subsequent chunk (optional)**:<br>`DER encoded transaction (var)` |
 
 ### Response
 
@@ -88,6 +88,24 @@ Currently, only single operation transactions are supported. App will refuse tra
 | ----------------------- | ------ | --------------- |
 | var                     | 0x9000 | `APPNAME (var)` |
 
+## SIGN_HASH
+
+This command signs provided tx digest with key derived from BIP 32 path (which must comply with SLIP-0048 standard). Hash string will be desplayed to the user and must be accepted.
+
+Input data is BIP 32 path followed by transaction digest (array of bytes)
+
+### Command
+
+| CLA  | INS  | P1   | P2   | Lc          | CData                                                                                                              |
+| ---- | ---- | ---- | ---- | ----------- | ------------------------------------------------------------------------------------------------------------------ |
+| 0xD4 | 0x10 | 0x00 | 0x00 | 1 + 4n + 32 | `len(bip32_path) (1)` \|\|<br> `bip32_path{1} (4)` \|\|<br>`...` \|\|<br>`bip32_path{n} (4)` \|\|<br>`digest (32)` |
+
+### Response
+
+| Response length (bytes) | SW     | RData            |
+| ----------------------- | ------ | ---------------- |
+| var                     | 0x9000 | `signature (33)` |
+
 ## Status Words
 
 | SW     | SW name                    | Description                                 |
@@ -103,4 +121,7 @@ Currently, only single operation transactions are supported. App will refuse tra
 | 0xB003 | `SW_TX_PARSING_FAIL`       | Failed to parse raw transaction             |
 | 0xB004 | `SW_BAD_STATE`             | Security issue with bad state               |
 | 0xB005 | `SW_SIGNATURE_FAIL`        | Signature of raw transaction failed         |
+| 0xB006 | `SW_HASH_SIGNING_DISABLED` | Hash signing is disabled in settings        |
+| 0xB007 | `SW_WRONG_HASH_LENGTH`     | Invalid length of input data                |
+| 0xB008 | `SW_HASH_PARSING_FAIL`     | Failed to parse transaction hash            |
 | 0x9000 | `SW_OK`                    | Success                                     |
