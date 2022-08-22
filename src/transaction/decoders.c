@@ -356,7 +356,7 @@ bool decoder_authority_type(buffer_t *buf, field_t *field, bool should_hash_only
 
     uint8_t tmp[MAX_ACCOUNT_NAME_LEN] = {0};
     char value[MEMBER_SIZE(field_t, value)] = {0};
-    char wif[PUBKEY_WIF_STR_LEN] = {0};
+    char wif[PUBKEY_WIF_STR_LEN + 1] = {0};
 
     // weight_threshold
     if (!buffer_read_u32(buf, &weight, LE) || !buffer_read_u8(buf, &count)) {
