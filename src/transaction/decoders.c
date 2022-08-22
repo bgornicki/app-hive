@@ -504,7 +504,7 @@ bool decoder_beneficiaries_extensions(buffer_t *buf, field_t *field, bool should
     size_t initial_offset = buf->offset;
     uint8_t size, type, account_name_len, beneficiaries;
     uint16_t weight;
-    char account_name[MAX_ACCOUNT_NAME_LEN] = {0};
+    char account_name[MAX_ACCOUNT_NAME_LEN + 1] = {0};
     char value[MEMBER_SIZE(field_t, value)] = {0};
 
     if (!buffer_read_u8(buf, &size)) {
@@ -532,7 +532,7 @@ bool decoder_beneficiaries_extensions(buffer_t *buf, field_t *field, bool should
             // clang-format off
             if (!buffer_read_u8(buf, &account_name_len) || 
                 account_name_len >= sizeof(value) || 
-                !buffer_move_partial(buf, (uint8_t *)account_name, sizeof(account_name), account_name_len) ||
+                !buffer_move_partial(buf, (uint8_t *)account_name, sizeof(account_name) - 1, account_name_len) ||
                 !buffer_read_u16(buf, &weight, LE)) {
                 return false;
             }
