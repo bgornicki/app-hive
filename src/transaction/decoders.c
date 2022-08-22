@@ -144,7 +144,7 @@ bool decoder_array_of_strings(buffer_t *buf, field_t *field, bool should_hash_on
 
     uint32_t max_value_size = MEMBER_SIZE(field_t, value);
 
-    char value[max_value_size - 3];
+    char value[max_value_size];
     memset(value, 0, max_value_size);
 
     char tmp[50];
