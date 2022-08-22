@@ -421,7 +421,7 @@ bool decoder_optional_authority_type(buffer_t *buf, field_t *field, bool should_
 
     uint8_t tmp[MAX_ACCOUNT_NAME_LEN] = {0};
     char value[MEMBER_SIZE(field_t, value)] = {0};
-    char wif[PUBKEY_WIF_STR_LEN] = {0};
+    char wif[PUBKEY_WIF_STR_LEN + 1] = {0};
 
     // this field may be optional so we need to check first byte
     if (!buffer_read_u8(buf, &count)) {
