@@ -36,3 +36,6 @@ doc/latex
 dev-env
 
 **/node_modules
+
+# Fuzzer
+fuzzing/cmake-build-fuzz/
