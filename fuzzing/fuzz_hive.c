@@ -11,21 +11,37 @@
 */
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
+    if (Size < 5) {
+        //mimic buf_len < OFFSET_CDATA in apdu_parser()
+        return 1;
+    }
     BEGIN_TRY {
         TRY {
+            uint8_t lc;
+
+            lc = Data[0];
+
             explicit_bzero(&G_context, sizeof(G_context));
             G_context.req_type = CONFIRM_TRANSACTION;
             G_context.state = STATE_NONE;
 
-            G_context.tx_info.raw_tx_len = Size > MAX_TRANSACTION_LEN ? MAX_TRANSACTION_LEN : Size;
-            memcpy(G_context.tx_info.raw_tx, Data, G_context.tx_info.raw_tx_len);
+            G_context.tx_info.raw_tx_len = Size - 1 > MAX_TRANSACTION_LEN ? MAX_TRANSACTION_LEN : Size - 1;
+            memcpy(G_context.tx_info.raw_tx, Data + 1, G_context.tx_info.raw_tx_len);
+            buffer_t tx_buffer = {.offset = 0, .ptr = &G_context.tx_info.raw_tx, .size = lc};
 
-            buffer_t buf = {.offset = 0, .ptr = &G_context.tx_info.raw_tx, .size = G_context.tx_info.raw_tx_len};
+            transaction_parse(&tx_buffer);
 
-            transaction_parse(&buf);
-        }
-        CATCH(EXCEPTION_IO_RESET) {
-            return 0;
+            lc = Data[0];
+
+            explicit_bzero(&G_context, sizeof(G_context));
+            G_context.req_type = CONFIRM_HASH;
+            G_context.state = STATE_NONE;
+
+            G_context.tx_info.raw_tx_len = Size - 1 > MAX_TRANSACTION_LEN ? MAX_TRANSACTION_LEN : Size - 1;
+            memcpy(G_context.tx_info.raw_tx, Data + 1, G_context.tx_info.raw_tx_len);
+            buffer_t hash_buffer = {.offset = 0, .ptr = &G_context.tx_info.raw_tx, .size = lc};
+
+            hash_parse(&hash_buffer);
         }
         CATCH_OTHER(e) {
             return 0;
@@ -34,6 +50,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
         }
         END_TRY;
     }
+
     return 0;
 }
 

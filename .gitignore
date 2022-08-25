@@ -39,3 +39,6 @@ dev-env
 
 # Fuzzer
 fuzzing/cmake-build-fuzz/
+fuzzing/cmake-build-fuzz-coverage/
+fuzzing/corpus/
+fuzzing/html-coverage/
