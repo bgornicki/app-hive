@@ -87,7 +87,7 @@ uint16_t io_exchange_al(uint8_t channel, uint16_t tx_len) {
 }
 
 int io_recv_command() {
-    int ret;
+    int ret = 0;
 
     switch (G_io_state) {
         case READY:
@@ -109,7 +109,7 @@ int io_recv_command() {
 }
 
 int io_send_response(const buffer_t *rdata, uint16_t sw) {
-    int ret;
+    int ret = 0;
 
     if (rdata != NULL) {
         if (rdata->size - rdata->offset > IO_APDU_BUFFER_SIZE - 2 ||  //
