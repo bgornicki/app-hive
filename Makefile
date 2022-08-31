@@ -22,7 +22,7 @@ endif
 include $(BOLOS_SDK)/Makefile.defines
 
 APP_LOAD_PARAMS  = --curve secp256k1
-APP_LOAD_PARAMS += --appFlags 0x240
+APP_LOAD_PARAMS += --appFlags 0x200
 APP_LOAD_PARAMS += --path "48'/13'"
 APP_LOAD_PARAMS += $(COMMON_LOAD_PARAMS)
 
