@@ -68,7 +68,7 @@ parser_status_e transaction_parse(buffer_t *buf) {
      *  - DER encoded operations
      */
     memset(data, 0, sizeof(data));
-    if (!buffer_read_tlv(buf, data, sizeof(data), &tag, &length)) {
+    if (!buffer_read_tlv(buf, data, sizeof(data), &tag, &length) || length > buf->offset) {
         return FIELD_PARSING_ERROR;
     }
 

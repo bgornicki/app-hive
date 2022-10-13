@@ -1,0 +1,50 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+    paths-ignore:
+      - '.github/workflows/*.yml'
+      - 'tests/*'
+
+jobs:
+  analyse:
+    name: Analyse
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    
+    strategy: 
+      matrix:
+        sdk: [ "$NANOS_SDK", "$NANOX_SDK", "$NANOSP_SDK" ]
+        #'cpp' covers C and C++
+        language: [ 'cpp' ]
+
+    steps:
+      - name: Adding GitHub workspace as safe directory
+        run: git config --global --add safe.directory $GITHUB_WORKSPACE
+
+      - name: Clone
+        uses: actions/checkout@v3
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-and-quality
+
+      # CodeQL will create the database during the compilation
+      - name: Build
+        run: |
+          make BOLOS_SDK=${{ matrix.sdk }}
+        
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
