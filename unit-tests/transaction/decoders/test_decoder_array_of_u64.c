@@ -47,36 +47,17 @@ static void test_decoder_array_of_u64_hashing(void **state) {
     field_t field = {0};
     buffer_t buffer_valid = {.offset = 0, .ptr = data, .size = sizeof(data)};
 
-    // both functions will be called three times - size, first u64, second u64
-    for (uint8_t i = 0; i < 3; i++) {
-        will_return(__wrap_cx_hash_no_throw, 0);
-        will_return(__wrap_cx_hash_get_size, 0);
-    }
+    // both functions will be called once
+    will_return(__wrap_cx_hash_no_throw, 0);
+    will_return(__wrap_cx_hash_get_size, 0);
 
     // expect cx_hash to be called with number of elements
     expect_value(__wrap_cx_hash_no_throw, hash, &G_context.tx_info.sha);
     expect_value(__wrap_cx_hash_no_throw, mode, 0);
-    expect_memory(__wrap_cx_hash_no_throw, in, data, 1);
-    expect_value(__wrap_cx_hash_no_throw, len, 1);
+    expect_memory(__wrap_cx_hash_no_throw, in, data, sizeof(data));
+    expect_value(__wrap_cx_hash_no_throw, len, sizeof(data));
     expect_value(__wrap_cx_hash_no_throw, out, NULL);
     expect_value(__wrap_cx_hash_no_throw, out_len, 0);
-
-    // expect cx_hash to be called with first value
-    expect_value(__wrap_cx_hash_no_throw, hash, &G_context.tx_info.sha);
-    expect_value(__wrap_cx_hash_no_throw, mode, 0);
-    expect_memory(__wrap_cx_hash_no_throw, in, data + 1, 8);
-    expect_value(__wrap_cx_hash_no_throw, len, 8);
-    expect_value(__wrap_cx_hash_no_throw, out, NULL);
-    expect_value(__wrap_cx_hash_no_throw, out_len, 0);
-
-    // expect cx_hash to be called with second value
-    expect_value(__wrap_cx_hash_no_throw, hash, &G_context.tx_info.sha);
-    expect_value(__wrap_cx_hash_no_throw, mode, 0);
-    expect_memory(__wrap_cx_hash_no_throw, in, data + 9, 8);
-    expect_value(__wrap_cx_hash_no_throw, len, 8);
-    expect_value(__wrap_cx_hash_no_throw, out, NULL);
-    expect_value(__wrap_cx_hash_no_throw, out_len, 0);
-
     // expect to success
     assert_true(decoder_array_of_u64(&buffer_valid, &field, true));
 

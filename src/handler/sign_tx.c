@@ -55,6 +55,7 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more) {
             tx.offset = 0;
             tx.ptr = G_context.tx_info.raw_tx;
             tx.size = cdata->size;
+
             const parser_status_e status = transaction_parse(&tx);
 
             if (status != PARSING_OK) {
@@ -84,6 +85,7 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more) {
 
         if (!more) {
             buffer_t tx = {0};
+            
             tx.offset = 0;
             tx.ptr = G_context.tx_info.raw_tx;
             tx.size = G_context.tx_info.raw_tx_len;

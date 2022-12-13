@@ -1,18 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
 
 if(${CMAKE_VERSION} VERSION_LESS 3.10)
-    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+  cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
 endif()
 
 # project information
 project(unit_tests
-        VERSION 0.1
-	      DESCRIPTION "Unit tests for Ledger Nano application"
-        LANGUAGES C)
-
+  VERSION 0.1
+  DESCRIPTION "Unit tests for Ledger Nano application"
+  LANGUAGES C)
 
 # guard against bad build-type strings
-if (NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
@@ -34,8 +33,8 @@ if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 endif()
 
 add_compile_definitions(
-  TEST 
-  APPNAME="HIVE" 
+  TEST
+  APPNAME="HIVE"
   HAVE_SECP256K1_CURVE
   APPVERSION="1.0.1"
   MAJOR_VERSION=1
@@ -99,6 +98,8 @@ add_library(format SHARED ../src/common/format.c)
 add_library(asn1 SHARED ../src/common/asn1.c)
 add_library(buffer SHARED ../src/common/buffer.c)
 add_library(read SHARED ../src/common/read.c)
+add_library(write SHARED ../src/common/write.c)
+add_library(varint SHARED ../src/common/varint.c)
 add_library(bip32 SHARED ../src/common/bip32.c)
 add_library(wif SHARED ../src/common/wif.c)
 add_library(base58 SHARED ../src/common/base58.c)
@@ -109,17 +110,17 @@ add_library(globals SHARED ../src/globals.c)
 add_library(mocks SHARED mocks.c)
 
 target_link_libraries(test_format PUBLIC cmocka gcov format)
-target_link_libraries(test_asn1 PUBLIC cmocka gcov asn1 buffer read bip32)
-target_link_libraries(test_buffer PUBLIC cmocka gcov buffer asn1 read bip32)
+target_link_libraries(test_asn1 PUBLIC cmocka gcov asn1 buffer read bip32 varint)
+target_link_libraries(test_buffer PUBLIC cmocka gcov buffer asn1 read bip32 varint)
 target_link_libraries(test_base58 PUBLIC cmocka gcov base58)
 target_link_libraries(test_bip32 PUBLIC cmocka gcov bip32 read)
-target_link_libraries(decoders buffer read asn1 bip32 wif base58 mocks -Wl,--wrap,cx_ripemd160_init_no_throw -Wl,--wrap,pic -Wl,--wrap,os_longjmp -Wl,--wrap,cx_hash_no_throw -Wl,--wrap,cx_hash_get_size) 
-target_link_libraries(wif -Wl,--wrap,cx_ripemd160_init_no_throw -Wl,--wrap,cx_hash_no_throw -Wl,--wrap,cx_hash_get_size) 
+target_link_libraries(decoders buffer read asn1 bip32 wif base58 varint mocks -Wl,--wrap,cx_ripemd160_init_no_throw -Wl,--wrap,pic -Wl,--wrap,os_longjmp -Wl,--wrap,cx_hash_no_throw -Wl,--wrap,cx_hash_get_size)
+target_link_libraries(wif -Wl,--wrap,cx_ripemd160_init_no_throw -Wl,--wrap,cx_hash_no_throw -Wl,--wrap,cx_hash_get_size,--wrap,os_longjmp)
 target_link_libraries(transaction_parse decoders globals format asn1)
 target_link_libraries(test_transaction_parse PUBLIC cmocka gcov mocks transaction_parse parsers decoders)
 target_link_libraries(parsers -Wl,--wrap,os_longjmp)
 target_link_libraries(test_decoder_operation_name PUBLIC cmocka gcov transaction_parse mocks)
-target_link_libraries(test_decoder_string PUBLIC cmocka gcov transaction_parse mocks)
+target_link_libraries(test_decoder_string PUBLIC cmocka gcov transaction_parse mocks varint)
 target_link_libraries(test_decoder_array_of_strings PUBLIC cmocka gcov transaction_parse mocks)
 target_link_libraries(test_decoder_boolean PUBLIC cmocka gcov transaction_parse mocks)
 target_link_libraries(test_decoder_date_time PUBLIC cmocka gcov transaction_parse mocks)

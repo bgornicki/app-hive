@@ -52,7 +52,7 @@ static void test_transaction_parse_success(void **state) {
 
     buffer_t valid_buffer = {.ptr = data, .size = sizeof(data), .offset = 0};
 
-    for (uint8_t i = 0; i < 14; i++) {
+    for (uint8_t i = 0; i < 11; i++) {
         will_return(__wrap_cx_hash_no_throw, 0);
         will_return(__wrap_cx_hash_get_size, 0);
 

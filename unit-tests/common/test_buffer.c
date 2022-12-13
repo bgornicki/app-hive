@@ -51,6 +51,7 @@ static void test_buffer_read(void **state) {
         0x03, 0x04, 0x05, 0x06,
         0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E
     };
+    
     buffer_t buf = {.ptr = temp, .size = sizeof(temp), .offset = 0};
 
     uint8_t first = 0;
@@ -88,7 +89,38 @@ static void test_buffer_read(void **state) {
     assert_int_equal(fourth, 1012478732780767239);     // 0x0E 0x0D 0x0C 0x0B 0x0A 0x09 0x08 0x07
     assert_true(buffer_seek_set(&buf, 8));             // seek at offset 8
     assert_false(buffer_read_u64(&buf, &fourth, BE));  // can't read 8 bytes
+}
 
+static void test_buffer_read_varint(void **state) {
+
+    // clang-format off
+    uint8_t temp_varint[] = {
+        0x01, // 1
+        0x80, 0x01, // 128
+        0x80, 0x80, 0x01, // 16384
+        0x80, 0x80, 0x80, 0x01, // 2097152
+        0x80, 0x80, 0x80, 0x80, 0x01, // 268435456
+        0x80, 0x80, 0x80, 0x80, 0x80, 0x01, // 34359738368
+        0x80 // fake varint, not enough bytes
+    };
+
+    buffer_t buf = {.ptr = temp_varint, .size = sizeof(temp_varint), .offset = 0};
+    uint64_t varint = 0;
+    
+    assert_true(buffer_read_varint(&buf, &varint));
+    assert_int_equal(varint, 1);
+    assert_true(buffer_read_varint(&buf, &varint));
+    assert_int_equal(varint, 128);
+    assert_true(buffer_read_varint(&buf, &varint));
+    assert_int_equal(varint, 16384);
+    assert_true(buffer_read_varint(&buf, &varint));
+    assert_int_equal(varint, 2097152);    
+    assert_true(buffer_read_varint(&buf, &varint));
+    assert_int_equal(varint, 268435456);
+    assert_true(buffer_read_varint(&buf, &varint));
+    assert_int_equal(varint, 34359738368);
+
+    assert_false(buffer_read_varint(&buf, &varint)); // not enough bytes
 }
 
 static void test_buffer_copy(void **state) {
@@ -139,6 +171,18 @@ static void test_buffer_move_partial(void **state) {
     uint8_t output2[3] = {0};
     assert_true(buffer_seek_set(&buf, 0));                      // seek at offset 0
     assert_false(buffer_move_partial(&buf, output2, sizeof(output2), 5));  // can't read 5 bytes
+}
+
+static void test_buffer_move_partial_long(void **state) {
+    (void) state;
+
+    uint8_t output[132] = {0};
+    uint8_t temp[132] = {1};
+    buffer_t buf = {.ptr = temp, .size = sizeof(temp), .offset = 0};
+
+    assert_true(buffer_move_partial(&buf, output, sizeof(output), 132));
+    assert_memory_equal(output, temp, 132);
+    assert_int_equal(buf.offset, 132);
 }
 
 static void test_buffer_read_tlv(void **state) {
@@ -211,7 +255,9 @@ int main() {
                                        cmocka_unit_test(test_buffer_copy),
                                        cmocka_unit_test(test_buffer_move),
                                        cmocka_unit_test(test_buffer_move_partial), 
+                                       cmocka_unit_test(test_buffer_move_partial_long), 
                                        cmocka_unit_test(test_buffer_read_tlv),
+                                       cmocka_unit_test(test_buffer_read_varint),
                                        cmocka_unit_test(test_buffer_read_bip32_path)};
 
     return cmocka_run_group_tests(tests, NULL, NULL);

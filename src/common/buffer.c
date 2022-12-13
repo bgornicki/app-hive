@@ -22,6 +22,7 @@
 #include <string.h>   // memmove
 
 #include "buffer.h"
+#include "varint.h"
 #include "read.h"
 #include "bip32.h"
 
@@ -117,6 +118,20 @@ bool buffer_read_u64(buffer_t *buffer, uint64_t *value, endianness_t endianness)
     return true;
 }
 
+bool buffer_read_varint(buffer_t *buffer, uint64_t *value) {
+    int8_t length = varint_read(buffer->ptr + buffer->offset, buffer->size - buffer->offset, value);
+
+    if (length < 0) {
+        *value = 0;
+
+        return false;
+    }
+
+    buffer_seek_cur(buffer, (size_t) length);
+
+    return true;
+}
+
 bool buffer_read_bip32_path(buffer_t *buffer, uint32_t *out, size_t out_len) {
     if (!bip32_path_read(buffer->ptr + buffer->offset, buffer->size - buffer->offset, out, out_len)) {
         return false;
@@ -158,7 +173,7 @@ bool buffer_copy(const buffer_t *buffer, uint8_t *out, size_t out_len) {
     return true;
 }
 
-bool buffer_copy_partial(const buffer_t *buffer, uint8_t *out, size_t out_len, uint8_t length) {
+bool buffer_copy_partial(const buffer_t *buffer, uint8_t *out, size_t out_len, size_t length) {
     if (length > out_len || buffer->size - buffer->offset < length) {
         return false;
     }
@@ -177,7 +192,7 @@ bool buffer_move(buffer_t *buffer, uint8_t *out, size_t out_len) {
     return true;
 }
 
-bool buffer_move_partial(buffer_t *buffer, uint8_t *out, size_t out_len, uint8_t length) {
+bool buffer_move_partial(buffer_t *buffer, uint8_t *out, size_t out_len, size_t length) {
     if (!buffer_copy_partial(buffer, out, out_len, length)) {
         return false;
     }
