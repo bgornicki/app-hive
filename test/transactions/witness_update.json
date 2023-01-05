@@ -10,11 +10,11 @@
                 "url": "https://hive.blog/@engrave/introduction",
                 "block_signing_key": "STM8LoQjQqJHvotqBo7HjnqmUbFW9oJ2theyqonzUd9DdJ7YYHsvD",
                 "props": {
-                    "account_creation_fee": "3.000 STEEM",
+                    "account_creation_fee": "3.000 HIVE",
                     "maximum_block_size": 131072,
                     "hbd_interest_rate": 1000
                 },
-                "fee": "0.000 STEEM"
+                "fee": "0.000 HIVE"
             }
         ]
     ],

@@ -127,9 +127,29 @@ static void test_format_asset(void **state) {
     assert_string_equal(out, "0.000 TESTS");
 }
 
+static void test_format_hash(void **state) {
+    (void) state;
+
+    uint8_t hash[] = {0xB2, 0xBF, 0x27, 0xF1, 0x05, 0xD0, 0xE0, 0xE1, 0x2F, 0x8B, 0xC9, 0x13, 0xC8, 0xE1, 0x24, 0xB2,
+                      0x13, 0x8E, 0x71, 0x1A, 0xFA, 0xEA, 0xA7, 0xE8, 0x5F, 0x18, 0x6C, 0x2D, 0x83, 0x87, 0xF4, 0x46};
+
+    char out[(sizeof(hash) * 2) + 1] = {0};
+
+    // return false if not enough space to handle output string
+    assert_false(format_hash(hash, sizeof(hash), out, 19));
+
+    // return true for valid hash and output string
+    memset(out, 0, sizeof(out));
+    assert_true(format_hash(hash, sizeof(hash), out, sizeof(out)));
+    assert_string_equal(out, "B2BF27F105D0E0E12F8BC913C8E124B2138E711AFAEAA7E85F186C2D8387F446");
+}
+
 int main() {
-    const struct CMUnitTest tests[] = {
-        cmocka_unit_test(test_format_timestamp), cmocka_unit_test(test_format_i64), cmocka_unit_test(test_format_u64), cmocka_unit_test(test_format_asset)};
+    const struct CMUnitTest tests[] = {cmocka_unit_test(test_format_timestamp),
+                                       cmocka_unit_test(test_format_i64),
+                                       cmocka_unit_test(test_format_u64),
+                                       cmocka_unit_test(test_format_asset),
+                                       cmocka_unit_test(test_format_hash)};
 
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

@@ -29,7 +29,9 @@
 #include "handler/get_version.h"
 #include "handler/get_app_name.h"
 #include "handler/get_public_key.h"
+#include "handler/get_settings.h"
 #include "handler/sign_tx.h"
+#include "handler/sign_hash.h"
 
 int apdu_dispatcher(const command_t *cmd) {
     if (cmd->cla != CLA) {
@@ -79,6 +81,26 @@ int apdu_dispatcher(const command_t *cmd) {
             buf.offset = 0;
 
             return handler_sign_tx(&buf, cmd->p1, (bool) (cmd->p2 & P2_MORE));
+
+        case SIGN_HASH:
+            if (cmd->p1 != 0 || cmd->p2 != 0) {
+                return io_send_sw(SW_WRONG_P1P2);
+            }
+            if (!cmd->data) {
+                return io_send_sw(SW_WRONG_DATA_LENGTH);
+            }
+
+            buf.ptr = cmd->data;
+            buf.size = cmd->lc;
+            buf.offset = 0;
+            return handler_sign_hash(&buf);
+
+        case GET_SETTINGS:
+            if (cmd->p1 != 0 || cmd->p2 != 0) {
+                return io_send_sw(SW_WRONG_P1P2);
+            }
+
+            return handler_get_settings();
         default:
             return io_send_sw(SW_INS_NOT_SUPPORTED);
     }

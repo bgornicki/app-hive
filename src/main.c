@@ -117,10 +117,15 @@ __attribute__((section(".boot"))) int main() {
                 G_io_app.plane_mode = os_setting_get(OS_SETTING_PLANEMODE, NULL, 0);
 #endif  // TARGET_NANOX
 
+                if (N_settings.initialized != 0x01) {
+                    settings_t settings = {.initialized = 0x01, .sign_hash_policy = DISABLED};
+                    nvm_write((void *) &N_settings, (void *) &settings, sizeof(settings_t));
+                }
+
                 USB_power(0);
                 USB_power(1);
 
-                ui_menu_main();
+                ui_menu_main(NULL);
 
 #ifdef HAVE_BLE
                 BLE_power(0, NULL);

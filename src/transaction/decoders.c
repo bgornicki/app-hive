@@ -144,7 +144,7 @@ bool decoder_array_of_strings(buffer_t *buf, field_t *field, bool should_hash_on
 
     uint32_t max_value_size = MEMBER_SIZE(field_t, value);
 
-    char value[max_value_size - 3];
+    char value[max_value_size];
     memset(value, 0, max_value_size);
 
     char tmp[50];
@@ -356,7 +356,7 @@ bool decoder_authority_type(buffer_t *buf, field_t *field, bool should_hash_only
 
     uint8_t tmp[MAX_ACCOUNT_NAME_LEN] = {0};
     char value[MEMBER_SIZE(field_t, value)] = {0};
-    char wif[PUBKEY_WIF_STR_LEN] = {0};
+    char wif[PUBKEY_WIF_STR_LEN + 1] = {0};
 
     // weight_threshold
     if (!buffer_read_u32(buf, &weight, LE) || !buffer_read_u8(buf, &count)) {
@@ -421,7 +421,7 @@ bool decoder_optional_authority_type(buffer_t *buf, field_t *field, bool should_
 
     uint8_t tmp[MAX_ACCOUNT_NAME_LEN] = {0};
     char value[MEMBER_SIZE(field_t, value)] = {0};
-    char wif[PUBKEY_WIF_STR_LEN] = {0};
+    char wif[PUBKEY_WIF_STR_LEN + 1] = {0};
 
     // this field may be optional so we need to check first byte
     if (!buffer_read_u8(buf, &count)) {
@@ -504,7 +504,7 @@ bool decoder_beneficiaries_extensions(buffer_t *buf, field_t *field, bool should
     size_t initial_offset = buf->offset;
     uint8_t size, type, account_name_len, beneficiaries;
     uint16_t weight;
-    char account_name[MAX_ACCOUNT_NAME_LEN] = {0};
+    char account_name[MAX_ACCOUNT_NAME_LEN + 1] = {0};
     char value[MEMBER_SIZE(field_t, value)] = {0};
 
     if (!buffer_read_u8(buf, &size)) {
@@ -532,7 +532,7 @@ bool decoder_beneficiaries_extensions(buffer_t *buf, field_t *field, bool should
             // clang-format off
             if (!buffer_read_u8(buf, &account_name_len) || 
                 account_name_len >= sizeof(value) || 
-                !buffer_move_partial(buf, (uint8_t *)account_name, sizeof(account_name), account_name_len) ||
+                !buffer_move_partial(buf, (uint8_t *)account_name, sizeof(account_name) - 1, account_name_len) ||
                 !buffer_read_u16(buf, &weight, LE)) {
                 return false;
             }

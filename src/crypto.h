@@ -5,6 +5,7 @@
 
 #include "os.h"
 #include "cx.h"
+#include "constants.h"
 
 /**
  * Derive private key given BIP32 path.
@@ -40,17 +41,21 @@ int crypto_derive_private_key(cx_ecfp_private_key_t *private_key, uint8_t chain_
  * @throw INVALID_PARAMETER
  *
  */
-int crypto_init_public_key(cx_ecfp_private_key_t *private_key, cx_ecfp_public_key_t *public_key, uint8_t raw_public_key[static 64]);
+int crypto_init_public_key(cx_ecfp_private_key_t *private_key, cx_ecfp_public_key_t *public_key, uint8_t raw_public_key[static PUBKEY_UNCOMPRESSED_LEN]);
 
 /**
  * Sign message hash in global context.
  *
- * @see G_context.bip32_path, G_context.tx_info.m_hash,
- * G_context.tx_info.signature.
+ * @param[in]  digest
+ *   Pointer to transaction digest.
+ * @param[out] signature
+ *  Pointer to signature.
+ *
+ * @see G_context.bip32_path
  *
  * @return true if success, false otherwise.
  *
  * @throw INVALID_PARAMETER
  *
  */
-bool crypto_sign_message(void);
+bool crypto_sign_digest(const uint8_t digest[static DIGEST_LEN], uint8_t signature[static SIGNATURE_LEN]);

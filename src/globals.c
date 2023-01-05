@@ -7,3 +7,4 @@ io_state_e G_io_state;
 ux_state_t G_ux;
 bolos_ux_params_t G_ux_params;
 global_ctx_t G_context;
+const settings_t N_settings_nvram;

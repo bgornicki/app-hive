@@ -198,3 +198,17 @@ bool format_asset(asset_t *asset, char *out, size_t out_len) {
 
     return true;
 }
+
+bool format_hash(const uint8_t *hash, size_t hash_len, char *out, size_t out_len) {
+    if (out_len < (hash_len * 2) + 1) {  // hex representation with null character at the end
+        return false;
+    }
+
+    memset(out, 0, out_len);
+
+    for (size_t i = 0; i < hash_len; i++) {
+        snprintf(out + i * 2, out_len - i * 2, "%02X", hash[i]);
+    }
+
+    return true;
+}

@@ -8,7 +8,7 @@
             {
                 "from": "engrave",
                 "to": "bgornicki",
-                "amount": "1.337 STEEM",
+                "amount": "1.337 HIVE",
                 "executions": 4,
                 "recurrence": 168,
                 "memo": "Sent with ledger"

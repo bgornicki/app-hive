@@ -2,7 +2,6 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-
 ![](https://user-images.githubusercontent.com/4411084/79356492-53928580-7f3f-11ea-929c-2b7e4ee4c8d5.jpg)
 
 ## What is Hive
@@ -17,46 +16,47 @@ Hive is an innovative and forward-looking decentralized blockchain and ecosystem
 
 Learn more: https://hive.io
 
-***
+---
 
 Operations supported by Hive Ledger application:
- * vote
- * comment
- * transfer
- * transfer_to_vesting
- * withdraw_vesting
- * limit_order_create
- * limit_order_cancel
- * feed_publish
- * convert
- * account_create
- * account_update
- * witness_update
- * account_witness_vote
- * account_witness_proxy
- * delete_comment
- * custom_json
- * comment_options
- * set_withdraw_vesting_route
- * claim_account
- * create_claimed_account
- * request_account_recovery
- * recover_account
- * change_recovery_account
- * transfer_to_savings
- * transfer_from_savings
- * cancel_transfer_from_savings
- * decline_voting_rights
- * reset_account
- * set_reset_account
- * claim_reward_balance
- * delegate_vesting_shares
- * create_proposal
- * update_proposal_votes
- * remove_proposal
- * update_proposal
- * collateralized_convert
- * recurrent_transfer
+
+- vote
+- comment
+- transfer
+- transfer_to_vesting
+- withdraw_vesting
+- limit_order_create
+- limit_order_cancel
+- feed_publish
+- convert
+- account_create
+- account_update
+- witness_update
+- account_witness_vote
+- account_witness_proxy
+- delete_comment
+- custom_json
+- comment_options
+- set_withdraw_vesting_route
+- claim_account
+- create_claimed_account
+- request_account_recovery
+- recover_account
+- change_recovery_account
+- transfer_to_savings
+- transfer_from_savings
+- cancel_transfer_from_savings
+- decline_voting_rights
+- reset_account
+- set_reset_account
+- claim_reward_balance
+- delegate_vesting_shares
+- create_proposal
+- update_proposal_votes
+- remove_proposal
+- update_proposal
+- collateralized_convert
+- recurrent_transfer
 
 ## Prerequisite
 
@@ -76,7 +76,25 @@ Compile app in the container:
 
 ```
 docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest make
-``` 
+```
+
+You can compile the app in debug mode (should print additional information in speculos) with:
+
+```
+docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest make DEBUG=1
+```
+
+If you want to compile the app for Nano X model, enter the container:
+
+```
+docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+```
+
+And then run
+
+```
+BOLOS_SDK=$NANOX_SDK make
+```
 
 ## Simulate with Speculos
 
@@ -95,7 +113,6 @@ docker run --rm -it -v $(realpath .)/bin:/speculos/apps -p 1234:1234 -p 5000:500
 ```
 
 Open `http://localhost:5000/` in your browser to see the simulator.
-
 
 ## Debug with Speculos
 
@@ -119,13 +136,11 @@ Connect your debugger with vscode by starting `Attach to gdbserver` configuratio
 
 You need to have ledgerblue installed (should be handled in "Prerequisite" part of this Readme).
 
-
 Load it with:
 
 ```
 python3 -m ledgerblue.loadApp --curve secp256k1 --appFlags 0x240 --path "48'/13'" --tlv --targetId 0x31100004 --targetVersion="2.0.0" --delete --fileName bin/app.hex --appName "Hive" --appVersion "1.0.0" --dataSize $((0x`cat debug/app.map |grep _envram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'` - 0x`cat debug/app.map |grep _nvram_data | tr -s ' ' | cut -f2 -d' '|cut -f2 -d'x'`)) `ICONHEX=\`python3 ./dev-env/SDK/nanos-secure-sdk/icon3.py --hexbitmaponly icons/nanos_app_hive.gif  2>/dev/null\` ; [ ! -z "$ICONHEX" ] && echo "--icon $ICONHEX"`
 ```
-
 
 ## Tests
 
@@ -164,5 +179,3 @@ It outputs 4 artifacts:
 - `speculos-log` within APDU command/response when executing end-to-end tests
 - `code-coverage` within HTML details of code coverage
 - `documentation` within HTML auto-generated documentation
-
-

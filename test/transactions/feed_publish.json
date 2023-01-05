@@ -8,8 +8,8 @@
             {
                 "publisher": "engrave",
                 "exchange_rate": {
-                    "base": "0.245 SBD",
-                    "quote": "1.000 STEEM"
+                    "base": "0.245 HBD",
+                    "quote": "1.000 HIVE"
                 }
             }
         ]

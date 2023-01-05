@@ -9,7 +9,7 @@
                 "from": "engrave",
                 "request_id": 101,
                 "to": "engrave",
-                "amount": "0.001 STEEM",
+                "amount": "0.001 HIVE",
                 "memo": "Test Ledger Nano S"
             }
         ]

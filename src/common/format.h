@@ -79,3 +79,5 @@ bool format_u64(const uint64_t i, char *out, uint8_t out_len);
  * @return true if success, false otherwise.
  */
 bool format_asset(asset_t *asset, char *out, size_t size);
+
+bool format_hash(const uint8_t *hash, size_t hash_len, char *out, size_t out_len);

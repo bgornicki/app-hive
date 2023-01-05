@@ -37,3 +37,13 @@ extern io_state_e G_io_state;
  * Global context for user requests.
  */
 extern global_ctx_t G_context;
+
+/**
+ * Global settings NVRAM storage
+ */
+extern settings_t const N_settings_nvram;
+
+/**
+ * Handly define to be able to easily access PIC settings structure
+ */
+#define N_settings (*(volatile settings_t *) PIC(&N_settings_nvram))

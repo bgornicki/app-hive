@@ -54,7 +54,7 @@ bool wif_from_compressed_public_key(uint8_t compressed_key[static PUBKEY_COMPRES
     memset(out, 0, out_len);
     strncpy(out, "STM", out_len);
 
-    if (base58_encode(temp, sizeof(temp), out + 3, out_len) == -1) {
+    if (base58_encode(temp, sizeof(temp), out + 3, out_len - 3) == -1) {
         return false;
     }
 
