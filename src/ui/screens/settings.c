@@ -34,7 +34,7 @@ UX_STEP_VALID(ux_settings_back_step, pb, ui_menu_main(NULL), {&C_icon_back, "Bac
 UX_FLOW(ux_settings_flow, &ux_settings_hash_sign_step, &ux_settings_back_step, FLOW_LOOP);
 
 void ui_display_settings(const ux_flow_step_t* const start_step) {
-    strcpy(sign_hash_policy_prompt, N_settings.sign_hash_policy == ENABLED ? "Enabled" : "Disabled");
+    strlcpy(sign_hash_policy_prompt, N_settings.sign_hash_policy == ENABLED ? "Enabled" : "Disabled", sizeof(sign_hash_policy_prompt));
     ux_flow_init(0, ux_settings_flow, start_step);
 }
 

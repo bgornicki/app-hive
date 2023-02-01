@@ -1,3 +1,4 @@
+#pragma once
 #include "os.h"
 #include "ux.h"
 #include "glyphs.h"

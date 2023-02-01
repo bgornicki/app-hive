@@ -1,6 +1,14 @@
 name: Compilation & tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
   job_build_debug:
@@ -8,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: docker://ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
+      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
 
     steps:
       - name: Clone
@@ -30,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: docker://ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
+      image: ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder:latest
 
     steps:
       - name: Clone
@@ -60,7 +68,7 @@ jobs:
           name: codecov-app-hive
           fail_ci_if_error: true
           verbose: true
-      
+
       - name: HTML documentation
         run: doxygen .doxygen/Doxyfile
 
@@ -77,7 +85,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: docker://ledgerhq/speculos:latest
+      image: ghcr.io/ledgerhq/speculos:latest
       ports:
         - 1234:1234
         - 9999:9999
@@ -90,7 +98,7 @@ jobs:
     steps:
       - name: Clone
         uses: actions/checkout@v2
-    
+
       - name: Install required packages
         run: |
           apt update && apt install -qy curl unzip wget gcc # /!\ workaround for pysha3

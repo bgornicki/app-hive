@@ -1,3 +1,4 @@
+#pragma once
 #ifndef GLYPH_hive_logo_BPP
         #define GLYPH_hive_logo_WIDTH 16
         #define GLYPH_hive_logo_HEIGHT 16
