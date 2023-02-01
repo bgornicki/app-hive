@@ -24,3 +24,12 @@ parser_status_e transaction_parse(buffer_t *buf);
  * @return PARSING_OK if success, error status otherwise.
  */
 parser_status_e hash_parse(buffer_t *buf);
+
+/**
+ * @brief Parse incoming path and message
+ *
+ * @param buf
+ *  Pointer to buffer with path and message
+ * @return PARSING_OK if success, error status otherwise.
+ */
+parser_status_e message_parse(buffer_t *buf);

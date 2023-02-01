@@ -20,12 +20,10 @@
 #include <string.h>   // memset
 
 #include "ui/screens/review_transaction.h"
+#include "ui/screens/variables.h"
 
-static action_validate_cb g_validate_callback;
-static char g_bip32_path[60];
 static enum e_state g_current_state;
 static int8_t g_tx_field_position;
-static field_t g_tx_field_parsed;
 
 // This is a special function you must call for bn_paging to work properly in an edgecase.
 // It does some weird stuff with the `G_ux` global which is defined by the SDK.
@@ -50,8 +48,8 @@ UX_STEP_NOCB(ux_display_tx_path_step,
 UX_STEP_NOCB(ux_display_tx_field_step,
              bn_paging,
              {
-                 .title = g_tx_field_parsed.title,
-                 .text = g_tx_field_parsed.value,
+                 .title = g_screen_text.title,
+                 .text = g_screen_text.value,
              });
 
 // For Nano X utilize all three lines of text
@@ -69,8 +67,8 @@ UX_STEP_NOCB(ux_display_tx_path_step,
 UX_STEP_NOCB(ux_display_tx_field_step,
              bnnn_paging,
              {
-                 .title = g_tx_field_parsed.title,
-                 .text = g_tx_field_parsed.value,
+                 .title = g_screen_text.title,
+                 .text = g_screen_text.value,
              });
 
 #endif
@@ -156,7 +154,7 @@ int ui_display_transaction() {
         return io_send_sw(SW_WRONG_BIP32_PATH);
     }
 
-    memset(&g_tx_field_parsed, 0, sizeof(field_t));
+    memset(&g_screen_text, 0, sizeof(field_t));
 
     g_tx_field_position = -1;
     g_validate_callback = &ui_action_validate_transaction;
@@ -172,7 +170,7 @@ void display_next_state(bool is_upper_delimiter) {
         if (g_current_state == STATIC_SCREEN) {
             // make sure we start from the first field
             g_tx_field_position = -1;
-            bool more_data = parse_field(&g_tx_field_parsed, false, false);
+            bool more_data = parse_field(&g_screen_text, false, false);
             if (more_data) {
                 // We found some data to display so we now enter in dynamic mode.
                 g_current_state = DYNAMIC_SCREEN;
@@ -182,7 +180,7 @@ void display_next_state(bool is_upper_delimiter) {
         } else {
             // The previous screen was NOT a static screen, so we were already in a dynamic screen.
             // Fetch new data.
-            bool more_data = parse_field(&g_tx_field_parsed, true, false);
+            bool more_data = parse_field(&g_screen_text, true, false);
             if (more_data) {
                 // We found some data so simply display it.
                 ux_flow_next();
@@ -199,7 +197,7 @@ void display_next_state(bool is_upper_delimiter) {
         // We're called from the lower delimiter.
         if (g_current_state == STATIC_SCREEN) {
             // Fetch new data
-            bool more_data = parse_field(&g_tx_field_parsed, true, true);
+            bool more_data = parse_field(&g_screen_text, true, true);
             if (more_data) {
                 // We found some data to display so enter in dynamic mode.
                 g_current_state = DYNAMIC_SCREEN;
@@ -209,7 +207,7 @@ void display_next_state(bool is_upper_delimiter) {
             ux_flow_prev();
         } else {
             // We're being called from a dynamic screen, so the user was already browsing the array.
-            bool more_data = parse_field(&g_tx_field_parsed, false, false);
+            bool more_data = parse_field(&g_screen_text, false, false);
             if (more_data) {
                 // We found some data, so display it.
                 // Similar to `ux_flow_prev()` but updates layout to account for `bn_paging`'s

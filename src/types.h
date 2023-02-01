@@ -15,8 +15,8 @@
  * Structure to keep operation field data to display on screen during transaction confirmation
  */
 typedef struct {
-    char title[60];
-    char value[255];
+    char title[MAX_SCREEN_TITLE_LEN + 1];
+    char value[MAX_SCREEN_TEXT_LEN + 1];
 } field_t;
 
 /**
@@ -42,7 +42,8 @@ typedef enum {
     GET_VERSION = 0x06,       /// version of the application
     GET_APP_NAME = 0x08,      /// name of the application
     SIGN_HASH = 0x10,         /// sign hash with BIP32 path
-    GET_SETTINGS = 0x12       /// settings of the application
+    GET_SETTINGS = 0x12,      /// settings of the application
+    SIGN_MESSAGE = 0x14       /// sign message with BIP32 path
 } command_e;
 
 /**
@@ -73,7 +74,8 @@ typedef enum {
 typedef enum {
     CONFIRM_PUBLIC_KEY,   /// confirm public key formatted in a Hive way
     CONFIRM_TRANSACTION,  /// confirm transaction information
-    CONFIRM_HASH          /// confirm hash
+    CONFIRM_HASH,         /// confirm hash
+    CONFIRM_MESSAGE       /// confirm message
 } request_type_e;
 
 /**
@@ -125,14 +127,30 @@ typedef struct {
 } hash_ctx_t;
 
 /**
+ * Structure for message signing context
+ */
+typedef struct {
+    uint8_t data[MAX_RAW_MESSAGE_LEN];  // input message
+    size_t data_len;                    // length of the message
+
+    buffer_t string;  // message string
+
+    uint8_t digest[DIGEST_LEN];        /// message digest
+    uint8_t signature[SIGNATURE_LEN];  /// compact message signature supported by Hive backend
+    cx_sha256_t sha;
+
+} message_ctx_t;
+
+/**
  * Structure for global context.
  */
 typedef struct {
     state_e state;  /// state of the context
     union {
-        pubkey_ctx_t pk_info;       /// public key context
-        transaction_ctx_t tx_info;  /// transaction context
-        hash_ctx_t hash_info;       /// hash signing context
+        pubkey_ctx_t pk_info;        /// public key context
+        transaction_ctx_t tx_info;   /// transaction context
+        hash_ctx_t hash_info;        /// hash signing context
+        message_ctx_t message_info;  /// message signing context
     };
     request_type_e req_type;              /// user request
     uint32_t bip32_path[MAX_BIP32_PATH];  /// BIP32 path
@@ -145,7 +163,8 @@ typedef enum {
     BIP32_PATH_PARSING_ERROR = -1,
     FIELD_PARSING_ERROR = -2,
     OPERATION_COUNT_PARSING_ERROR = -3,
-    WRONG_LENGTH_ERROR = -4
+    WRONG_LENGTH_ERROR = -4,
+    MESSAGE_PARSING_ERROR = -5
 } parser_status_e;
 
 typedef enum { DISABLED = 0x00, ENABLED = 0x01 } sign_hash_policy_t;

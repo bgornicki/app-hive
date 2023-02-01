@@ -23,7 +23,7 @@
 #include "os.h"
 #include "cx.h"
 
-#include "sign_tx.h"
+#include "sign_hash.h"
 #include "sw.h"
 #include "globals.h"
 #include "crypto.h"

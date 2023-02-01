@@ -82,3 +82,27 @@ void ui_action_validate_hash(bool choice) {
     G_context.state = STATE_NONE;
     ui_menu_main(NULL);
 }
+
+void ui_action_validate_message(bool choice) {
+    if (choice) {
+        G_context.state = STATE_APPROVED;
+
+        ui_display_signing_message_message();
+
+        // refresh the display before intensive operation
+        io_seproxyhal_io_heartbeat();
+
+        // store hash (take 0 bytes from current hash and copy it to the output buffer)
+        cx_hash_final((cx_hash_t *) &G_context.message_info.sha, G_context.message_info.digest);
+
+        if (!crypto_sign_digest(G_context.message_info.digest, G_context.message_info.signature)) {
+            io_send_sw(SW_SIGNATURE_FAIL);
+        } else {
+            helper_send_response_sig(G_context.message_info.signature, MEMBER_SIZE(message_ctx_t, signature));
+        }
+    } else {
+        io_send_sw(SW_DENY);
+    }
+    G_context.state = STATE_NONE;
+    ui_menu_main(NULL);
+}

@@ -3,6 +3,7 @@
 #include <stdbool.h>  // bool
 #include "ui/screens/review_transaction.h"
 #include "ui/screens/review_hash.h"
+#include "ui/screens/review_message.h"
 
 /**
  * Action for public key validation and export.
@@ -30,3 +31,12 @@ void ui_action_validate_transaction(bool choice);
  *
  */
 void ui_action_validate_hash(bool choice);
+
+/**
+ * @brief Action for message validation.
+ *
+ * @param[in] choice
+ *  User choice (either approved or rejected).
+ *
+ */
+void ui_action_validate_message(bool choice);

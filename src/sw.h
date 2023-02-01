@@ -60,3 +60,11 @@
  * Status word for hash parsing fail.
  */
 #define SW_HASH_PARSING_FAIL 0xB008
+/**
+ * Status word for message parsing fail.
+ */
+#define SW_WRONG_MESSAGE_LENGTH 0xB009
+/**
+ * Status word for message parsing fail.
+ */
+#define SW_MESSAGE_PARSING_FAIL 0xB00A

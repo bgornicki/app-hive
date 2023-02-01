@@ -22,10 +22,9 @@
 #include "globals.h"
 #include "menu.h"
 #include "settings.h"
+#include "ui/screens/variables.h"
 
-static char sign_hash_policy_prompt[9];  // max size of longest settings name which is "Disabled"
-
-UX_STEP_CB(ux_settings_hash_sign_step, bn_paging, switch_settings_hash_signing(), {.title = "Hash signing", .text = sign_hash_policy_prompt});
+UX_STEP_CB(ux_settings_hash_sign_step, bn_paging, switch_settings_hash_signing(), {.title = "Hash signing", .text = g_screen_text.value});
 UX_STEP_VALID(ux_settings_back_step, pb, ui_menu_main(NULL), {&C_icon_back, "Back"});  // TODO make it back to ux_menu_settings_step
 
 // FLOW for the settings submenu:
@@ -34,7 +33,8 @@ UX_STEP_VALID(ux_settings_back_step, pb, ui_menu_main(NULL), {&C_icon_back, "Bac
 UX_FLOW(ux_settings_flow, &ux_settings_hash_sign_step, &ux_settings_back_step, FLOW_LOOP);
 
 void ui_display_settings(const ux_flow_step_t* const start_step) {
-    strlcpy(sign_hash_policy_prompt, N_settings.sign_hash_policy == ENABLED ? "Enabled" : "Disabled", sizeof(sign_hash_policy_prompt));
+    memset(&g_screen_text, 0, sizeof(g_screen_text));
+    strlcpy(g_screen_text.value, N_settings.sign_hash_policy == ENABLED ? "Enabled" : "Disabled", sizeof(g_screen_text.value));
     ux_flow_init(0, ux_settings_flow, start_step);
 }
 
