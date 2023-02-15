@@ -50,7 +50,7 @@ bool format_timestamp(uint32_t timestamp, char *out, size_t out_size);
  * @return true if success, false otherwise.
  *
  */
-bool format_i64(const int64_t i, char *out, uint8_t out_len);
+bool format_i64(const int64_t i, char *out, size_t out_len);
 
 /**
  * Format 64-bit unsigned integer as string.
@@ -65,7 +65,7 @@ bool format_i64(const int64_t i, char *out, uint8_t out_len);
  * @return true if success, false otherwise.
  *
  */
-bool format_u64(const uint64_t i, char *out, uint8_t out_len);
+bool format_u64(const uint64_t i, char *out, size_t out_len);
 
 /**
  * Convert serialized asset into readable form and replace STEEM/SBD with HIVE equivalents

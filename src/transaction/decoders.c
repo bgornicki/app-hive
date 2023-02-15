@@ -491,34 +491,33 @@ bool decoder_empty_extensions(buffer_t *buf, field_t *field, bool should_hash_on
 
 bool decoder_beneficiaries_extensions(buffer_t *buf, field_t *field, bool should_hash_only) {
     size_t initial_offset = buf->offset;
-    uint64_t account_name_len;
-    uint8_t size, type, beneficiaries;
+    uint64_t size, account_name_len, type, beneficiaries;
     uint16_t weight;
     char account_name[MAX_ACCOUNT_NAME_LEN + 1] = {0};
     char value[MEMBER_SIZE(field_t, value)] = {0};
 
-    if (!buffer_read_u8(buf, &size)) {
+    if (!buffer_read_varint(buf, &size)) {
         return false;
     }
 
     if (size == 0) {
         if (should_hash_only) {
-            cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, &size, sizeof(size), NULL, 0);
+            cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, buf->ptr + initial_offset, buf->offset - initial_offset, NULL, 0);
         } else {
             snprintf(field->value, MEMBER_SIZE(field_t, value), "[ ]");
         }
     } else if (size == 1) {
-        if (!buffer_read_u8(buf, &type) || type != EXT_TYPE_BENEFICIARIES) {  // only allow beneficiaries extension
+        if (!buffer_read_varint(buf, &type) || type != EXT_TYPE_BENEFICIARIES) {  // only allow beneficiaries extension
             return false;
         }
 
-        if (!buffer_read_u8(buf, &beneficiaries)) {
+        if (!buffer_read_varint(buf, &beneficiaries)) {
             return false;
         }
 
         snprintf(value, sizeof(value), "Beneficiaries: [");
 
-        for (uint8_t i = 0; i < beneficiaries; i++) {
+        for (uint64_t i = 0; i < beneficiaries; i++) {
             // clang-format off
             if (!buffer_read_varint(buf, &account_name_len) || 
                 account_name_len >= sizeof(value) || 

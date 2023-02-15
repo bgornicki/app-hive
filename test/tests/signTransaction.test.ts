@@ -29,8 +29,8 @@ describe('Sign transaction', async () => {
         prepareExpectedSignature('custom_json', '1f4eab1e64b878d2a69ffccc132df420f5caf71e46a5b4a5b2c94aed4dc53dbde930b6f727d7241a09be6c15fbcc94b734e5ef000fd60d10acb1f57aa5f98ca803'),
         prepareExpectedSignature('comment_options', '205a5850d6dace3b168893bbcdc9e5ce8ec12f37deeaca366fa3dadb1a085303775a802c257bf4cbe6dd51ef5b7638b926e63a68e2c2cfc81f3b88844709b5c7a6'),
         prepareExpectedSignature('set_withdraw_vesting_route', '1f5519b506188a995c6f8a10e0bc1c299b55e99b189d32f3b2c025db895e62031e609a503296a791a436ee058aa5611469fa6811760003342d41fe2740c8a521df'),
-        prepareExpectedSignature('claim_account', '207436a6c83c1ec81cc6e4babdc123b8ea98b6072b522455643eb359a6eb7ea697068e2364678d23b539d7f7f815bf10983254d0c274c9e2c611b5632f2a6b9cdb'),
-        prepareExpectedSignature('create_claimed_account', '206f4b365ede329992a926024f4ee94e6ceae97abf79243cb6424406b3af455b4617ffcce56d56c44cad2fa6f9b54f75f49f8b9213e0083f02810477eeacaa30c5'),
+        prepareExpectedSignature('claim_account', '1f6295c85bd6eff71cd3d279653c315841d77973985b6f7f455e7f89a24a1bf17c1e9621908f34ae5f25a1613040a6f2670d47c544619fdf23bfe288e1d023db43'),
+        prepareExpectedSignature('create_claimed_account', '2003379f04a193d572293d974ea9bd10c268aa09c79225761d2625f8672f02b08e65aaa2665787ddee4d958cb152b3b8650dbbdf56a405ad442486a5eb01c1d37b'),
         prepareExpectedSignature('request_account_recovery', '1f146c40780bae972cda6b6d68dcb868361ec420666295ca7c6650eb006d993fb91292f3649e6f5499aac22f21cbdd941ec77c39d86da4892080a81995cdab4b5a'),
         prepareExpectedSignature('recover_account', '206d43fec3f16b23bf269744512e1c6a5e81043d6a44ab7d277449cd972a7f7e6b0d40ef62e234da2a31b63e903d49e91b5438c1ae188f55bdbc2b3fb3fd834bfb'),
         prepareExpectedSignature('change_recovery_account', '1f1d7152c4ce34898025ac1ff7b91a1c9a3a6b272c2ef85da2c307b441a30d02ea1e76a3b2566710f6d3ca9eab12a2c95d8cbac81137c56433bdb9119d93343f2f'),
@@ -44,10 +44,10 @@ describe('Sign transaction', async () => {
         prepareExpectedSignature('delegate_vesting_shares', '205cecbad305dbf38847b6cab04b2d05ac8b5cd4afb3ca4972d9f7ce11eacbe0a5271c31b151e43f53c1f14468993c0c647206999e9c5b8aeef92acfb78e72cad0'),
         prepareExpectedSignature('create_proposal', '1f741ec5bbda3fa814a697e613f74308dff51fb2d5e03fe79645b9d89e98110dc640b2abe32d9a493164910e9838fbb9821552f6fdef377dde1aa3ab28b0bbc969'),
         prepareExpectedSignature('update_proposal_votes', '1f176b9203a6f75e45ce3c4077030cc907a0a7b207c31931bf9ebede8524cdcbc4286843c00f125886da8fe1785ec04070e71daf5bf2822e7645473b064cabf3f5'),
-        prepareExpectedSignature('remove_proposal', '1f1b3813b2e45cd1edc80bfca39739ec81ab959815dcd6d1754c44ff5244c4e8cf4065324f33f2305cc69cdb124de646d5192bb8b61276a847307356d3c01e3fca'),
-        prepareExpectedSignature('update_proposal', '202c7bf53e7427a2037e6529d3b89a97c74e5a64555ca5e9062d502fcd299abe295bfca3f4b58e7d0c2b3500fd47268c1342587d4230bbe20737f3b62a81b5a4da'),
+        prepareExpectedSignature('remove_proposal', '203de03fd29dcfc90523bc0ed9a19ee120dfea9d63f6b4c9c43ed9f3ce7611c7c36ed918953743691e46a76cb6eb4e8c9b0f768a2e32f80b42af10bfb09a5e1e5d'),
+        prepareExpectedSignature('update_proposal', '204e356db374ba31c988ab9bfa3d5ad905444dd2888e803a613bdeeba787a443c02988152a4f9011275ad87fc4e1a47d4763808883aa579c8ee9a2fab34f00449d'),
         prepareExpectedSignature('collateralized_convert', '20771cc128dbf1f8c841c826e1b29fa2de31e1bf3ec0e54b42e9f00b8df4aac6e90d2026c77fc383f70e433cfd05cbae9e6f83ffd6406b463882728c3c8adab6f6'),
-        prepareExpectedSignature('recurrent_transfer', '1f22d8dd7df3051b0bc864763fbfccb177b24ba19d019a32ed6728638c4912bce77381d6d438b7cc18963a97319eb199fbf5cf8192586c6d616bbefa824cbcbc1f'),
+        prepareExpectedSignature('recurrent_transfer', '1f6cb4225060272b497de0668db023945e2cc485af0a72c5e77062d707eaca0c627d1290f5d0a8f796de18656e8df8e96b473b83d4461bc92c390ba7668fb16204'),
     ].forEach(input => {
         it(`should properly sign transaction with ${input.operation} operation`, async function () {
             const tx = JSON.parse(await fsPromises.readFile(`./transactions/${input.operation}.json`, 'utf8'));

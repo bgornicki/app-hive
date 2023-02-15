@@ -153,16 +153,16 @@ const parser_t set_withdraw_vesting_route_parser = {
 
 // 22 claim_account
 const parser_t claim_account_parser = {
-    .decoders = {&decoder_operation_name, &decoder_string, &decoder_asset},
-    .names = {"Operation", "Creator", "Fee"},
-    .size = 3
+    .decoders = {&decoder_operation_name, &decoder_string, &decoder_asset, &decoder_empty_extensions},
+    .names = {"Operation", "Creator", "Fee", "Extensions"},
+    .size = 4
 };
 
 // 23 create_claimed_account
 const parser_t create_claimed_account_parser = {
-    .decoders = {&decoder_operation_name, &decoder_string, &decoder_string, &decoder_authority_type, &decoder_authority_type, &decoder_authority_type, &decoder_public_key, &decoder_string},
-    .names = {"Operation", "Creator", "New acc. name", "Owner", "Active", "Posting", "Memo key", "JSON metadata"},
-    .size = 8
+    .decoders = {&decoder_operation_name, &decoder_string, &decoder_string, &decoder_authority_type, &decoder_authority_type, &decoder_authority_type, &decoder_public_key, &decoder_string, &decoder_empty_extensions},
+    .names = {"Operation", "Creator", "New acc. name", "Owner", "Active", "Posting", "Memo key", "JSON metadata", "Extensions"},
+    .size = 9
 };
 
 
@@ -253,16 +253,16 @@ const parser_t update_proposal_votes_parser = {
 
 // 46 remove_proposal
 const parser_t remove_proposal_parser = {
-    .decoders = {&decoder_operation_name, &decoder_string, &decoder_array_of_u64},
-    .names = {"Operation", "Proposal owner", "Proposals"},
-    .size = 3
+    .decoders = {&decoder_operation_name, &decoder_string, &decoder_array_of_u64, &decoder_empty_extensions},
+    .names = {"Operation", "Proposal owner", "Proposals", "Extensions"},
+    .size = 4
 };
 
 // 47 update_proposal
 const parser_t update_proposal_parser = {
-    .decoders = {&decoder_operation_name, &decoder_uint32, &decoder_array_of_u64},
-    .names = {"Operation", "Proposal owner", "Proposals"},
-    .size = 3
+    .decoders = {&decoder_operation_name, &decoder_uint32, &decoder_array_of_u64, &decoder_empty_extensions},
+    .names = {"Operation", "Proposal owner", "Proposals", "Extensions"},
+    .size = 4
 };
 
 // 48 collateralized_convert
@@ -274,9 +274,9 @@ const parser_t collateralized_convert_parser = {
 
 // 49 recurrent_transfer
 const parser_t recurrent_transfer_parser = {
-    .decoders = {&decoder_operation_name, &decoder_string, &decoder_string, &decoder_asset, &decoder_string, &decoder_uint16, &decoder_uint16},
-    .names = {"Operation", "From", "To", "Amount", "Memo", "Recurrence", "Executions"},
-    .size = 7
+    .decoders = {&decoder_operation_name, &decoder_string, &decoder_string, &decoder_asset, &decoder_string, &decoder_uint16, &decoder_uint16, &decoder_empty_extensions},
+    .names = {"Operation", "From", "To", "Amount", "Memo", "Recurrence", "Executions", "Extensions"},
+    .size = 8
 };
 
 // clang-format on

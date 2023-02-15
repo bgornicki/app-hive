@@ -8,7 +8,7 @@
     "author": "Bartłomiej (@engrave) Górnicki",
     "license": "MIT",
     "dependencies": {
-        "@engrave/ledger-app-hive": "3.5.0",
+        "@engrave/ledger-app-hive": "3.5.3",
         "@ledgerhq/hw-transport-node-hid": "6.27.10",
         "@ledgerhq/hw-transport-node-hid-noevents": "6.27.10",
         "@ledgerhq/hw-transport-node-speculos": "6.27.10",
