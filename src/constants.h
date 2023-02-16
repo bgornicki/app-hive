@@ -35,7 +35,7 @@
 /**
  * Maximum transaction length (bytes) - four chunks
  */
-#define MAX_TRANSACTION_LEN (3 * MAX_DATA_CHUNK_LEN)
+#define MAX_TRANSACTION_LEN (4 * MAX_DATA_CHUNK_LEN)
 
 /**
  * Maximum DER encoded signature length (bytes).
@@ -65,3 +65,18 @@
 
 // [wif (53)][\0]
 #define PUBKEY_WIF_STR_LEN 54
+
+/**
+ * Maximum message length (bytes) - three chunks
+ */
+#define MAX_RAW_MESSAGE_LEN (3 * MAX_DATA_CHUNK_LEN)
+
+/**
+ * Maximum length of the screen text.
+ */
+#define MAX_SCREEN_TEXT_LEN 512
+
+/**
+ * Maximum length of the screen title.
+ */
+#define MAX_SCREEN_TITLE_LEN 60

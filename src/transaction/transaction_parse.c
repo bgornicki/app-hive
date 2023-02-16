@@ -26,7 +26,7 @@
 #include "common/bip32.h"
 
 /**
- * Parse DER encoded transacion, validate and hash
+ * Parse DER encoded transaction, validate and hash
  * */
 parser_status_e transaction_parse(buffer_t *buf) {
     uint8_t data[MAX_TRANSACTION_LEN];
@@ -117,6 +117,37 @@ parser_status_e hash_parse(buffer_t *buf) {
     if (!buffer_move(buf, G_context.hash_info.hash, MEMBER_SIZE(hash_ctx_t, hash))) {
         return WRONG_LENGTH_ERROR;
     }
+
+    return PARSING_OK;
+}
+
+parser_status_e message_parse(buffer_t *buf) {
+    /* Parse:
+     *  - BIP32 path
+     */
+    if (!buffer_read_u8(buf, &G_context.bip32_path_len) || !buffer_read_bip32_path(buf, G_context.bip32_path, (size_t) G_context.bip32_path_len)) {
+        return BIP32_PATH_PARSING_ERROR;
+    }
+
+    /* Parse:
+     *  - message
+     */
+
+    buffer_t string = {0};
+
+    if (!buffer_read_varint(buf, (uint64_t *) &string.size) || string.size > MAX_SCREEN_TEXT_LEN) {
+        return MESSAGE_PARSING_ERROR;
+    }
+
+    string.ptr = buf->ptr + buf->offset;
+
+    G_context.message_info.string = string;
+
+    if (!buffer_can_read(buf, string.size)) {
+        return MESSAGE_PARSING_ERROR;
+    }
+
+    cx_hash((cx_hash_t *) &G_context.message_info.sha, 0, string.ptr, string.size, NULL, 0);
 
     return PARSING_OK;
 }

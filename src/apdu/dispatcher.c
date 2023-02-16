@@ -32,6 +32,7 @@
 #include "handler/get_settings.h"
 #include "handler/sign_tx.h"
 #include "handler/sign_hash.h"
+#include "handler/sign_message.h"
 
 int apdu_dispatcher(const command_t *cmd) {
     if (cmd->cla != CLA) {
@@ -47,12 +48,14 @@ int apdu_dispatcher(const command_t *cmd) {
             }
 
             return handler_get_version();
+
         case GET_APP_NAME:
             if (cmd->p1 != 0 || cmd->p2 != 0) {
                 return io_send_sw(SW_WRONG_P1P2);
             }
 
             return handler_get_app_name();
+
         case GET_PUBLIC_KEY:
             if (cmd->p1 > 1 || cmd->p2 > 0) {
                 return io_send_sw(SW_WRONG_P1P2);
@@ -67,6 +70,7 @@ int apdu_dispatcher(const command_t *cmd) {
             buf.offset = 0;
 
             return handler_get_public_key(&buf, (bool) cmd->p1);
+
         case SIGN_TRANSACTION:
             if (cmd->p1 != P1_FIRST_CHUNK && cmd->p1 != P1_SUBSEQUENT_CHUNK && cmd->p2 != P2_LAST && cmd->p2 != P2_MORE) {
                 return io_send_sw(SW_WRONG_P1P2);
@@ -94,6 +98,21 @@ int apdu_dispatcher(const command_t *cmd) {
             buf.size = cmd->lc;
             buf.offset = 0;
             return handler_sign_hash(&buf);
+
+        case SIGN_MESSAGE:
+            if (cmd->p1 != P1_FIRST_CHUNK && cmd->p1 != P1_SUBSEQUENT_CHUNK && cmd->p2 != P2_LAST && cmd->p2 != P2_MORE) {
+                return io_send_sw(SW_WRONG_P1P2);
+            }
+
+            if (!cmd->data) {
+                return io_send_sw(SW_WRONG_DATA_LENGTH);
+            }
+
+            buf.ptr = cmd->data;
+            buf.size = cmd->lc;
+            buf.offset = 0;
+
+            return handler_sign_message(&buf, cmd->p1, (bool) (cmd->p2 & P2_MORE));
 
         case GET_SETTINGS:
             if (cmd->p1 != 0 || cmd->p2 != 0) {

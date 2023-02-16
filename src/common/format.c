@@ -79,7 +79,7 @@ bool format_timestamp(uint32_t timestamp, char *out, size_t out_len) {
     return true;
 }
 
-bool format_i64(const int64_t i, char *out, uint8_t out_len) {
+bool format_i64(const int64_t i, char *out, size_t out_len) {
     char temp[] = "-9223372036854775808";
 
     char *ptr = temp;
@@ -101,9 +101,9 @@ bool format_i64(const int64_t i, char *out, uint8_t out_len) {
         *ptr++ = '0';
     }
 
-    int distance = (ptr - temp) + 1;
+    size_t distance = (ptr - temp) + 1;
 
-    if ((int) out_len < distance) {
+    if (out_len < distance) {
         return false;
     }
 
@@ -118,7 +118,7 @@ bool format_i64(const int64_t i, char *out, uint8_t out_len) {
     return true;
 }
 
-bool format_u64(const uint64_t i, char *out, uint8_t out_len) {
+bool format_u64(const uint64_t i, char *out, size_t out_len) {
     if (out_len < MAX_U64_LEN) {
         return false;
     }
@@ -142,7 +142,7 @@ bool format_u64(const uint64_t i, char *out, uint8_t out_len) {
     return true;
 }
 
-static bool insert_string(char *out, uint8_t out_len, const char *source, size_t position) {
+static bool insert_string(char *out, size_t out_len, const char *source, size_t position) {
     if (strlen(source) + position > out_len - 1) {  // need space for null character
         return false;
     }

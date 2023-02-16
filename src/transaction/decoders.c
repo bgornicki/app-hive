@@ -109,109 +109,98 @@ bool decoder_operation_name(buffer_t *buf, field_t *field, bool should_hash_only
  * Decode string which consist of [length] [n chars]
  */
 bool decoder_string(buffer_t *buf, field_t *field, bool should_hash_only) {
-    uint8_t string_length;
-    if (!buffer_read_u8(buf, &string_length)) {
+    size_t initial_offset = buf->offset;
+
+    uint64_t string_length;
+    if (!buffer_read_varint(buf, &string_length)) {
         return false;
     }
 
-    char value[string_length + 1];
-    memset(value, 0, sizeof(value));
+    char str[string_length + 1];
+    memset(str, 0, sizeof(str));
 
-    if (!buffer_move_partial(buf, (uint8_t *) value, sizeof(value), string_length)) {
+    if (!buffer_move_partial(buf, (uint8_t *) str, sizeof(str), string_length)) {
         return false;
     }
-
-    value[string_length] = '\0';  // string end
 
     if (should_hash_only) {
-        cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, &string_length, 1, NULL, 0);
-        cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, (uint8_t *) value, string_length, NULL, 0);
+        cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, buf->ptr + initial_offset, buf->offset - initial_offset, NULL, 0);
     } else {
-        snprintf(field->value, MEMBER_SIZE(field_t, value), "%s", value);
+        snprintf(field->value, MEMBER_SIZE(field_t, value), "%s", str);
     }
     return true;
 }
 
 bool decoder_array_of_strings(buffer_t *buf, field_t *field, bool should_hash_only) {
-    uint8_t size;
-    if (!buffer_read_u8(buf, &size)) {
+    size_t initial_offset = buf->offset;
+
+    uint64_t number_of_items;
+    if (!buffer_read_varint(buf, &number_of_items)) {
         return false;
     }
 
-    if (should_hash_only) {
-        cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, &size, sizeof(size), NULL, 0);
-    }
+    uint32_t max_string_length = MEMBER_SIZE(field_t, value);
 
-    uint32_t max_value_size = MEMBER_SIZE(field_t, value);
-
-    char value[max_value_size];
-    memset(value, 0, max_value_size);
+    char str[max_string_length];
+    memset(str, 0, max_string_length);
 
     char tmp[50];
 
-    snprintf(value, max_value_size, "[ ");
+    snprintf(str, max_string_length, "[ ");
 
-    for (uint8_t i = 0; i < size; i++) {
+    for (uint8_t i = 0; i < number_of_items; i++) {
         memset(tmp, 0, sizeof(tmp));
-
-        uint8_t string_length;
-        if (!buffer_read_u8(buf, &string_length) || string_length >= sizeof(tmp) || !buffer_move_partial(buf, (uint8_t *) tmp, sizeof(tmp), string_length)) {
+        uint64_t string_length;
+        if (!buffer_read_varint(buf, &string_length) || string_length >= sizeof(tmp) ||
+            !buffer_move_partial(buf, (uint8_t *) tmp, sizeof(tmp), string_length)) {
             return false;
         }
-
-        if (should_hash_only) {
-            cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, &string_length, sizeof(string_length), NULL, 0);
-            cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, (uint8_t *) tmp, string_length, NULL, 0);
-        }
-
-        snprintf(value + strlen(value), sizeof(value) - strlen(value), i == size - 1 ? "%s" : "%s, ", tmp);
+        snprintf(str + strlen(str), sizeof(str) - strlen(str), i == number_of_items - 1 ? "%s" : "%s, ", tmp);
     }
 
-    snprintf(value + strlen(value), sizeof(value) - strlen(value), " ]");
+    snprintf(str + strlen(str), sizeof(str) - strlen(str), " ]");
 
-    if (!should_hash_only) {
-        snprintf(field->value, MEMBER_SIZE(field_t, value), "%s", value);
+    if (should_hash_only) {
+        cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, buf->ptr + initial_offset, buf->offset - initial_offset, NULL, 0);
+    } else {
+        snprintf(field->value, MEMBER_SIZE(field_t, value), "%s", str);
     }
+
     return true;
 }
 
 bool decoder_array_of_u64(buffer_t *buf, field_t *field, bool should_hash_only) {
-    uint32_t max_value_size = MEMBER_SIZE(field_t, value);
+    size_t initial_offset = buf->offset;
+    uint32_t max_string_length = MEMBER_SIZE(field_t, value);
     char u64_str[MAX_U64_LEN];
-    char value[max_value_size];
-    uint8_t size;
+    char str[max_string_length];
+    uint64_t number_of_items;
     uint64_t proposal_id;
 
-    memset(value, 0, max_value_size);
+    memset(str, 0, max_string_length);
 
-    if (!buffer_read_u8(buf, &size)) {
+    if (!buffer_read_varint(buf, &number_of_items)) {
         return false;
     }
 
-    if (should_hash_only) {
-        cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, (uint8_t *) &size, sizeof(size), NULL, 0);
-    }
+    snprintf(str, max_string_length, "[ ");
 
-    snprintf(value, max_value_size, "[ ");
-
-    for (uint8_t i = 0; i < size; i++) {
-        memset(u64_str, 0, 10);
+    for (uint8_t i = 0; i < number_of_items; i++) {
+        memset(u64_str, 0, ARRAYLEN(u64_str));
         if (!buffer_read_u64(buf, &proposal_id, LE) || !format_u64(proposal_id, u64_str, ARRAYLEN(u64_str))) {
             return false;
         }
-
-        if (should_hash_only) {
-            cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, (uint8_t *) &proposal_id, sizeof(proposal_id), NULL, 0);
-        }
-
-        snprintf(value + strlen(value), max_value_size - strlen(value), i == size - 1 ? "%s" : "%s, ", u64_str);
+        snprintf(str + strlen(str), max_string_length - strlen(str), i == number_of_items - 1 ? "%s" : "%s, ", u64_str);
     }
 
-    snprintf(value + strlen(value), max_value_size - strlen(value), " ]");
+    snprintf(str + strlen(str), max_string_length - strlen(str), " ]");
 
-    if (!should_hash_only) {
-        snprintf(field->value, MEMBER_SIZE(field_t, value), "%s", value);
+    if (should_hash_only) {
+        cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, buf->ptr + initial_offset, buf->offset - initial_offset, NULL, 0);
+    } else {
+        snprintf(field->value, MEMBER_SIZE(field_t, value), "%s", str);
     }
+
     return true;
 }
 
@@ -350,7 +339,7 @@ bool decoder_uint8(buffer_t *buf, field_t *field, bool should_hash_only) {
 bool decoder_authority_type(buffer_t *buf, field_t *field, bool should_hash_only) {
     size_t initial_offset = buf->offset;
 
-    uint8_t count;
+    uint64_t count;
     uint16_t threshold;
     uint32_t weight;
 
@@ -359,7 +348,7 @@ bool decoder_authority_type(buffer_t *buf, field_t *field, bool should_hash_only
     char wif[PUBKEY_WIF_STR_LEN + 1] = {0};
 
     // weight_threshold
-    if (!buffer_read_u32(buf, &weight, LE) || !buffer_read_u8(buf, &count)) {
+    if (!buffer_read_u32(buf, &weight, LE) || !buffer_read_varint(buf, &count)) {
         return false;
     }
 
@@ -369,10 +358,10 @@ bool decoder_authority_type(buffer_t *buf, field_t *field, bool should_hash_only
     for (uint8_t i = 0; i < count; i++) {
         memset(tmp, 0, sizeof(tmp));
 
-        uint8_t string_length;
+        uint64_t string_length;
 
         // clang-format off
-    if (!buffer_read_u8(buf, &string_length) || 
+    if (!buffer_read_varint(buf, &string_length) || 
         string_length >= sizeof(tmp) || 
         !buffer_move_partial(buf, tmp, sizeof(tmp), string_length) ||
         !buffer_read_u16(buf, &threshold, LE)) {
@@ -386,7 +375,7 @@ bool decoder_authority_type(buffer_t *buf, field_t *field, bool should_hash_only
     snprintf(value + strlen(value), sizeof(value) - strlen(value), " ], [ ");
 
     // key_auths
-    if (!buffer_read_u8(buf, &count)) {
+    if (!buffer_read_varint(buf, &count)) {
         return false;
     }
 
@@ -502,35 +491,35 @@ bool decoder_empty_extensions(buffer_t *buf, field_t *field, bool should_hash_on
 
 bool decoder_beneficiaries_extensions(buffer_t *buf, field_t *field, bool should_hash_only) {
     size_t initial_offset = buf->offset;
-    uint8_t size, type, account_name_len, beneficiaries;
+    uint64_t size, account_name_len, type, beneficiaries;
     uint16_t weight;
     char account_name[MAX_ACCOUNT_NAME_LEN + 1] = {0};
     char value[MEMBER_SIZE(field_t, value)] = {0};
 
-    if (!buffer_read_u8(buf, &size)) {
+    if (!buffer_read_varint(buf, &size)) {
         return false;
     }
 
     if (size == 0) {
         if (should_hash_only) {
-            cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, &size, sizeof(size), NULL, 0);
+            cx_hash((cx_hash_t *) &G_context.tx_info.sha, 0, buf->ptr + initial_offset, buf->offset - initial_offset, NULL, 0);
         } else {
             snprintf(field->value, MEMBER_SIZE(field_t, value), "[ ]");
         }
     } else if (size == 1) {
-        if (!buffer_read_u8(buf, &type) || type != EXT_TYPE_BENEFICIARIES) {  // only allow beneficiaries extension
+        if (!buffer_read_varint(buf, &type) || type != EXT_TYPE_BENEFICIARIES) {  // only allow beneficiaries extension
             return false;
         }
 
-        if (!buffer_read_u8(buf, &beneficiaries)) {
+        if (!buffer_read_varint(buf, &beneficiaries)) {
             return false;
         }
 
         snprintf(value, sizeof(value), "Beneficiaries: [");
 
-        for (uint8_t i = 0; i < beneficiaries; i++) {
+        for (uint64_t i = 0; i < beneficiaries; i++) {
             // clang-format off
-            if (!buffer_read_u8(buf, &account_name_len) || 
+            if (!buffer_read_varint(buf, &account_name_len) || 
                 account_name_len >= sizeof(value) || 
                 !buffer_move_partial(buf, (uint8_t *)account_name, sizeof(account_name) - 1, account_name_len) ||
                 !buffer_read_u16(buf, &weight, LE)) {

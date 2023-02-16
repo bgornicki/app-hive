@@ -56,49 +56,15 @@ static void test_decoder_array_of_strings_hashing(void **state) {
     field_t field = {0};
     buffer_t buffer_valid = {.offset = 0, .ptr = data, .size = sizeof(data)};
 
-    // both functions will be called five times
-    for (uint8_t i = 0; i < 5; i++) {
-        will_return(__wrap_cx_hash_no_throw, 0);
-        will_return(__wrap_cx_hash_get_size, 0);
-    }
+    // both functions will be called once
+    will_return(__wrap_cx_hash_no_throw, 0);
+    will_return(__wrap_cx_hash_get_size, 0);
 
-    // expect cx_hash to be called with strings count
+    // expect cx_hash to be called with buffer data
     expect_value(__wrap_cx_hash_no_throw, hash, &G_context.tx_info.sha);
     expect_value(__wrap_cx_hash_no_throw, mode, 0);
-    expect_memory(__wrap_cx_hash_no_throw, in, data, 1);
-    expect_value(__wrap_cx_hash_no_throw, len, 1);
-    expect_value(__wrap_cx_hash_no_throw, out, NULL);
-    expect_value(__wrap_cx_hash_no_throw, out_len, 0);
-
-    // expect cx_hash to be called with first string length
-    expect_value(__wrap_cx_hash_no_throw, hash, &G_context.tx_info.sha);
-    expect_value(__wrap_cx_hash_no_throw, mode, 0);
-    expect_memory(__wrap_cx_hash_no_throw, in, data + 1, 1);
-    expect_value(__wrap_cx_hash_no_throw, len, 1);  // make sure we won't hash anything but string
-    expect_value(__wrap_cx_hash_no_throw, out, NULL);
-    expect_value(__wrap_cx_hash_no_throw, out_len, 0);
-
-    // expect cx_hash to be called with first string content
-    expect_value(__wrap_cx_hash_no_throw, hash, &G_context.tx_info.sha);
-    expect_value(__wrap_cx_hash_no_throw, mode, 0);
-    expect_memory(__wrap_cx_hash_no_throw, in, data + 2, data[1]);
-    expect_value(__wrap_cx_hash_no_throw, len, data[1]);  // make sure we won't hash anything but string
-    expect_value(__wrap_cx_hash_no_throw, out, NULL);
-    expect_value(__wrap_cx_hash_no_throw, out_len, 0);
-
-    // expect cx_hash to be called with second string length
-    expect_value(__wrap_cx_hash_no_throw, hash, &G_context.tx_info.sha);
-    expect_value(__wrap_cx_hash_no_throw, mode, 0);
-    expect_memory(__wrap_cx_hash_no_throw, in, data + 6, 1);
-    expect_value(__wrap_cx_hash_no_throw, len, 1);  // make sure we won't hash anything but string
-    expect_value(__wrap_cx_hash_no_throw, out, NULL);
-    expect_value(__wrap_cx_hash_no_throw, out_len, 0);
-
-    // expect cx_hash to be called with second string content
-    expect_value(__wrap_cx_hash_no_throw, hash, &G_context.tx_info.sha);
-    expect_value(__wrap_cx_hash_no_throw, mode, 0);
-    expect_memory(__wrap_cx_hash_no_throw, in, data + 7, data[6]);
-    expect_value(__wrap_cx_hash_no_throw, len, data[6]);  // make sure we won't hash anything but string
+    expect_memory(__wrap_cx_hash_no_throw, in, data, sizeof(data));
+    expect_value(__wrap_cx_hash_no_throw, len, sizeof(data));
     expect_value(__wrap_cx_hash_no_throw, out, NULL);
     expect_value(__wrap_cx_hash_no_throw, out_len, 0);
 

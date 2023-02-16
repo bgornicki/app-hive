@@ -1,6 +1,6 @@
 /*****************************************************************************
  *   Ledger App Hive.
- *   (c) 2022 Bartłomiej (@engrave) Górnicki
+ *   (c) 2023 Bartłomiej (@engrave) Górnicki
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "ui/screens/review_hash.h"
+#include "ui/screens/review_message.h"
 #include "ui/screens/variables.h"
 
 #ifdef TARGET_NANOS
 // Step with title/text for BIP32 path
-UX_STEP_NOCB(ux_display_hash_path_step,
+UX_STEP_NOCB(ux_display_message_path_step,
              bn_paging,
              {
                  .title = "Signing key path",
@@ -33,7 +33,7 @@ UX_STEP_NOCB(ux_display_hash_path_step,
 // For Nano X and S+ utilize all three lines of text
 #else
 // Step with title/text for BIP32 path
-UX_STEP_NOCB(ux_display_hash_path_step,
+UX_STEP_NOCB(ux_display_message_path_step,
              bnnn_paging,
              {
                  .title = "Signing key path",
@@ -42,35 +42,36 @@ UX_STEP_NOCB(ux_display_hash_path_step,
 #endif
 
 #ifdef TARGET_NANOS
-// Step with title/text for BIP32 path
-UX_STEP_NOCB(ux_display_hash_value_step,
+// Step with message content
+UX_STEP_NOCB(ux_display_message_step,
              bn_paging,
              {
-                 .title = "Hash",
+                 .title = "Message",
                  .text = g_screen_text.value,
              });
 
 // For Nano X and S+ utilize all three lines of text
 #else
-// Step with title/text for BIP32 path
-UX_STEP_NOCB(ux_display_hash_value_step,
+// Step with message content
+UX_STEP_NOCB(ux_display_message_step,
              bnnn_paging,
              {
-                 .title = "Hash",
+                 .title = "Message",
                  .text = g_screen_text.value,
              });
 #endif
 
 // Step with approve button
-UX_STEP_CB(ux_display_hash_approve_step,
+UX_STEP_CB(ux_display_message_approve_step,
            pb,
            (*g_validate_callback)(true),
            {
                &C_icon_validate_14,
                "Approve",
            });
+
 // Step with reject button
-UX_STEP_CB(ux_display_hash_reject_step,
+UX_STEP_CB(ux_display_message_reject_step,
            pb,
            (*g_validate_callback)(false),
            {
@@ -79,46 +80,47 @@ UX_STEP_CB(ux_display_hash_reject_step,
            });
 
 // Step with icon and text
-UX_STEP_NOCB(ux_display_review_hash_step,
+UX_STEP_NOCB(ux_display_review_message_step,
              pnn,
              {
                  &C_icon_eye,
                  "Review",
-                 "Hash",
+                 "message",
              });
 
-// FLOW to display transaction information:
-// #1 screen : eye icon + "Review hash"
-// #2 n screens : display transaction field
-// #3 screen : approve button
-// #4 screen : reject button
-UX_FLOW(ux_display_hash_flow,
-        &ux_display_review_hash_step,
-        &ux_display_hash_path_step,
-        &ux_display_hash_value_step,
-        &ux_display_hash_approve_step,
-        &ux_display_hash_reject_step,
+// FLOW to display message:
+// #1 screen : eye icon + "Review message"
+// #2 screen : display BIP32 path
+// #3 n screens : display message content
+// #4 screen : approve button
+// #5 screen : reject button
+UX_FLOW(ux_display_message_flow,
+        &ux_display_review_message_step,
+        &ux_display_message_path_step,
+        &ux_display_message_step,
+        &ux_display_message_approve_step,
+        &ux_display_message_reject_step,
         FLOW_LOOP);
 
-// Transaction signing message step
-UX_STEP_NOCB(ux_display_signing_hash_step,
+// Message signing message step
+UX_STEP_NOCB(ux_display_signing_message_step,
              pnn,
              {
                  &C_icon_processing,
                  "Signing",
-                 "hash",
+                 "message",
              });
 
-// FLOW to display transaction signing message:
-// #1 screen : eye processing + "Signing hash"
-UX_FLOW(ux_display_signing_hash_flow, &ux_display_signing_hash_step);
+// FLOW to display message signing message:
+// #1 screen : eye processing + "Signing message"
+UX_FLOW(ux_display_signing_message_flow, &ux_display_signing_message_step);
 
-void ui_display_signing_hash_message() {
-    ux_flow_init(0, ux_display_signing_hash_flow, NULL);
+void ui_display_signing_message_message() {
+    ux_flow_init(0, ux_display_signing_message_flow, NULL);
 }
 
-int ui_display_hash() {
-    if (G_context.req_type != CONFIRM_HASH || G_context.state != STATE_PARSED) {
+int ui_display_message() {
+    if (G_context.req_type != CONFIRM_MESSAGE || G_context.state != STATE_PARSED) {
         G_context.state = STATE_NONE;
         return io_send_sw(SW_BAD_STATE);
     }
@@ -129,14 +131,11 @@ int ui_display_hash() {
     }
 
     memset(&g_screen_text, 0, sizeof(field_t));
+    snprintf(g_screen_text.value, sizeof(g_screen_text.value), "%s", G_context.message_info.string.ptr + G_context.message_info.string.offset);
 
-    if (!format_hash(G_context.hash_info.hash, MEMBER_SIZE(hash_ctx_t, hash), g_screen_text.value, sizeof(g_screen_text.value))) {
-        return io_send_sw(SW_WRONG_HASH_LENGTH);
-    }
+    g_validate_callback = &ui_action_validate_message;
 
-    g_validate_callback = &ui_action_validate_hash;
-
-    ux_flow_init(0, ux_display_hash_flow, NULL);
+    ux_flow_init(0, ux_display_message_flow, NULL);
 
     return 0;
 }

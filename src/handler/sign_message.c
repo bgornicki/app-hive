@@ -1,7 +1,6 @@
 /*****************************************************************************
  *   Ledger App Hive.
- *   (c) 2020 Ledger SAS.
- *   Modifications (c) Bartłomiej (@engrave) Górnicki
+ *   (c) 2023 Bartłomiej (@engrave) Górnicki
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,16 +23,15 @@
 #include "os.h"
 #include "cx.h"
 
-#include "sign_tx.h"
+#include "sign_message.h"
 #include "sw.h"
 #include "globals.h"
 #include "crypto.h"
-#include "ui/screens/review_transaction.h"
+#include "ui/screens/review_message.h"
 #include "common/buffer.h"
 #include "apdu/dispatcher.h"
-#include "transaction/transaction_parse.h"
 
-int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more) {
+int handler_sign_message(buffer_t *cdata, uint8_t chunk, bool more) {
     if (chunk == P1_FIRST_CHUNK) {  // first chunk
 
         if (G_context.state != STATE_NONE) {
@@ -41,31 +39,32 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more) {
         }
 
         explicit_bzero(&G_context, sizeof(G_context));
-        G_context.req_type = CONFIRM_TRANSACTION;
+        G_context.req_type = CONFIRM_MESSAGE;
         G_context.state = STATE_NONE;
-        cx_sha256_init(&G_context.tx_info.sha);
-        if (!buffer_move(cdata, G_context.tx_info.raw_tx, MAX_TRANSACTION_LEN)) {
-            return io_send_sw(SW_WRONG_TX_LENGTH);
+        cx_sha256_init(&G_context.message_info.sha);
+
+        if (!buffer_move(cdata, G_context.message_info.data, MAX_RAW_MESSAGE_LEN)) {
+            return io_send_sw(SW_WRONG_MESSAGE_LENGTH);
         }
 
-        G_context.tx_info.raw_tx_len += cdata->size;
+        G_context.message_info.data_len += cdata->size;
 
         if (!more) {
-            buffer_t tx = {0};
+            buffer_t msg = {0};
 
-            tx.offset = 0;
-            tx.ptr = G_context.tx_info.raw_tx;
-            tx.size = cdata->size;
+            msg.offset = 0;
+            msg.ptr = G_context.message_info.data;
+            msg.size = cdata->size;
 
-            const parser_status_e status = transaction_parse(&tx);
+            const parser_status_e status = message_parse(&msg);
 
             if (status != PARSING_OK) {
-                return io_send_sw(SW_TX_PARSING_FAIL);
+                return io_send_sw(SW_MESSAGE_PARSING_FAIL);
             }
 
             G_context.state = STATE_PARSED;
 
-            return ui_display_transaction();
+            return ui_display_message();
         } else {
             G_context.state = STATE_TX_RECEIVING;
             // will be more, just return OK
@@ -78,28 +77,28 @@ int handler_sign_tx(buffer_t *cdata, uint8_t chunk, bool more) {
         }
 
         // get subsequent chunk
-        if (!buffer_move(cdata, G_context.tx_info.raw_tx + G_context.tx_info.raw_tx_len, MAX_TRANSACTION_LEN - G_context.tx_info.raw_tx_len)) {
-            return io_send_sw(SW_WRONG_TX_LENGTH);
+        if (!buffer_move(cdata, G_context.message_info.data + G_context.message_info.data_len, MAX_RAW_MESSAGE_LEN - G_context.message_info.data_len)) {
+            return io_send_sw(SW_WRONG_MESSAGE_LENGTH);
         }
 
-        G_context.tx_info.raw_tx_len += cdata->size;
+        G_context.message_info.data_len += cdata->size;
 
         if (!more) {
-            buffer_t tx = {0};
+            buffer_t msg = {0};
 
-            tx.offset = 0;
-            tx.ptr = G_context.tx_info.raw_tx;
-            tx.size = G_context.tx_info.raw_tx_len;
+            msg.offset = 0;
+            msg.ptr = G_context.message_info.data;
+            msg.size = G_context.message_info.data_len;
 
-            const parser_status_e status = transaction_parse(&tx);
+            const parser_status_e status = message_parse(&msg);
 
             if (status != PARSING_OK) {
-                return io_send_sw(SW_TX_PARSING_FAIL);
+                return io_send_sw(SW_MESSAGE_PARSING_FAIL);
             }
 
             G_context.state = STATE_PARSED;
 
-            return ui_display_transaction();
+            return ui_display_message();
         } else {
             G_context.state = STATE_TX_RECEIVING;
             // will be more, just return OK

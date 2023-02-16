@@ -23,9 +23,7 @@
 #include <string.h>   // memset
 
 #include "ui/screens/confirm_public_key.h"
-
-static action_validate_cb g_validate_callback;
-static char g_bip32_path[60];
+#include "ui/screens/variables.h"
 
 // Step with icon and text
 UX_STEP_NOCB(ux_display_confirm_public_key_step, pn, {&C_icon_eye, "Confirm Public key"});
