@@ -135,7 +135,7 @@ parser_status_e message_parse(buffer_t *buf) {
 
     buffer_t string = {0};
 
-    if (!buffer_read_varint(buf, (uint64_t *) &string.size)) {
+    if (!buffer_read_varint(buf, (uint64_t *) &string.size) || string.size > MAX_SCREEN_TEXT_LEN) {
         return MESSAGE_PARSING_ERROR;
     }
 
